@@ -36,6 +36,7 @@ class MyPlugin(BasePlugin):
 | `model_select` | Model selector                       | `model_type: "llm"/"tts"/"stt"/"image"/"embedding"/"rerank"/"video"` |
 | `persona_select` | Persona selector (saves persona ID) | —                       |
 | `section`      | Collapsible section for grouping fields | `collapsed`, `fields`  |
+| `info`         | Read-only informational callout (no data storage) | `level: "info"/"warning"` |
 
 ## Example schema.json
 
@@ -154,6 +155,43 @@ class MyPlugin(BasePlugin):
 ```
 
 Section child fields also support `locales` for i18n.
+
+## Info Type
+
+`info` is a read-only field that displays an informational callout in the config panel. It does not store any data and is purely for providing hints or guidance to the user.
+
+**Parameters:**
+
+| Parameter | Type   | Description                                            |
+| --------- | ------ | ------------------------------------------------------ |
+| `level`   | string | `"info"` (default) for blue callout, `"warning"` for amber callout |
+
+**Example:**
+
+```json
+{
+  "notice": {
+    "type": "info",
+    "name": "Notice",
+    "hint": "This setting does not affect existing conversations.",
+    "level": "info",
+    "locales": {
+      "zh": { "name": "提示", "hint": "此设置不会影响已有的对话。" }
+    }
+  },
+  "warn_deprecated": {
+    "type": "info",
+    "name": "Deprecated",
+    "hint": "This option will be removed in a future version.\nPlease migrate to the new plugin config.",
+    "level": "warning",
+    "locales": {
+      "zh": { "name": "即将废弃", "hint": "此选项将在未来版本中移除。\n请迁移到新的插件配置。" }
+    }
+  }
+}
+```
+
+> `info` fields are skipped during config save/load and validation. They support `\n` in `hint` for line breaks.
 
 ## Locales
 

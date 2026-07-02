@@ -36,6 +36,7 @@ class MyPlugin(BasePlugin):
 | `model_select` | 模型选择器                     | `model_type: "llm"/"tts"/"stt"/"image"/"embedding"/"rerank"/"video"` |
 | `persona_select` | 人设选择器（保存人设 ID）    | —                                                       |
 | `section`      | 可折叠分组区域                 | `collapsed`, `fields`     |
+| `info`         | 只读信息提示（不存储数据）     | `level: "info"/"warning"` |
 
 ## 示例 schema.json
 
@@ -154,6 +155,43 @@ class MyPlugin(BasePlugin):
 ```
 
 Section 的子字段同样支持 `locales` 国际化。
+
+## Info 类型
+
+`info` 是一种只读字段，用于在配置面板中显示信息提示。不会存储任何数据，仅用于向用户展示提示或引导信息。
+
+**参数：**
+
+| 参数    | 类型   | 说明                                           |
+| ------- | ------ | ---------------------------------------------- |
+| `level` | string | `"info"`（默认）蓝色信息提示，`"warning"`琥珀色警告提示 |
+
+**示例：**
+
+```json
+{
+  "notice": {
+    "type": "info",
+    "name": "提示",
+    "hint": "此设置不会影响已有的对话。",
+    "level": "info",
+    "locales": {
+      "zh": { "name": "提示", "hint": "此设置不会影响已有的对话。" }
+    }
+  },
+  "warn_deprecated": {
+    "type": "info",
+    "name": "即将废弃",
+    "hint": "此选项将在未来版本中移除。\n请迁移到新的插件配置。",
+    "level": "warning",
+    "locales": {
+      "zh": { "name": "即将废弃", "hint": "此选项将在未来版本中移除。\n请迁移到新的插件配置。" }
+    }
+  }
+}
+```
+
+> `info` 字段在配置保存/加载和校验时会被跳过。`hint` 支持 `\n` 换行。
 
 ## Locales
 
