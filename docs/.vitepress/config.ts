@@ -59,6 +59,7 @@ export default defineConfig({
               { text: 'What is KiraAI', link: '/guide/introduction' },
               { text: 'Quick Start', link: '/guide/quickstart' },
               { text: 'Community', link: '/guide/community' },
+              { text: 'FAQ', link: '/guide/faq' },
             ]
           },
           {
@@ -176,6 +177,7 @@ export default defineConfig({
               { text: '什么是KiraAI', link: '/zh/guide/introduction' },
               { text: '快速开始', link: '/zh/guide/quickstart' },
               { text: '社区', link: '/zh/guide/community' },
+              { text: '常见问题', link: '/zh/guide/faq' },
             ]
           },
           {
