@@ -363,10 +363,44 @@ window.PluginPageContext.ready().then(function (ctx) {
 | `getContext()`                            | `object \| null`  | Synchronous context access (null before ready)     |
 | `onContext(fn)`                           | `() => void`      | Subscribe to context changes; returns unsubscribe  |
 | `onThemeChange(fn)`                       | `() => void`      | Subscribe to theme changes; callback `(isDark: bool)` |
+| `createWebSocket(path, protocols?)`      | `WebSocket`       | Create an authenticated WebSocket with `?token=<JWT>` appended automatically |
 | `api.get(endpoint, params?)`              | `Promise<any>`    | GET to `/api/plugin/{id}/{endpoint}`               |
 | `api.post(endpoint, body?)`               | `Promise<any>`    | POST request                                       |
 | `api.upload(endpoint, file, fieldName?)`  | `Promise<any>`    | Upload file via FormData                           |
 | `api.delete(endpoint)`                    | `Promise<any>`    | DELETE request                                     |
+
+### WebSocket Authentication
+
+When a plugin registers a WebSocket endpoint with `auth=True`:
+
+```python
+@register.ws("/call", auth=True)
+async def ws_call(self, ws: WebSocket):
+    ...
+```
+
+Use `createWebSocket(path)` to connect — it automatically reads the JWT token from `localStorage` and appends it as a `?token=` query parameter:
+
+```html
+<script>
+var PPC = window.PluginPageContext
+
+PPC.ready().then(function () {
+    var ws = PPC.createWebSocket('/call')
+
+    ws.onmessage = function (event) {
+        var data = JSON.parse(event.data)
+        console.log(data)
+    }
+
+    ws.onopen = function () {
+        ws.send(JSON.stringify({ type: 'hello' }))
+    }
+})
+</script>
+```
+
+> **Note:** Always call `createWebSocket(path)` **after** `ready()` resolves — `buildWsUrl()` (used internally) throws if context is not yet initialized. The token is sourced from `localStorage.jwt_token`, which is set during WebUI login.
 
 ### Theme Adaptation
 

@@ -363,10 +363,44 @@ window.PluginPageContext.ready().then(function (ctx) {
 | `getContext()`                          | `object \| null`  | 同步获取当前 context（未就绪时为 null）  |
 | `onContext(fn)`                         | `() => void`      | 监听 context 变化，返回取消监听函数      |
 | `onThemeChange(fn)`                     | `() => void`      | 监听主题切换，回调参数 `(isDark: bool)`  |
+| `createWebSocket(path, protocols?)`    | `WebSocket`       | 创建已鉴权的 WebSocket，自动附加 `?token=<JWT>` |
 | `api.get(endpoint, params?)`            | `Promise<any>`    | GET 请求 `/api/plugin/{id}/{endpoint}`   |
 | `api.post(endpoint, body?)`             | `Promise<any>`    | POST 请求                                |
 | `api.upload(endpoint, file, fieldName?)`| `Promise<any>`    | 上传文件（FormData）                     |
 | `api.delete(endpoint)`                  | `Promise<any>`    | DELETE 请求                              |
+
+### WebSocket 鉴权
+
+当插件注册 `auth=True` 的 WebSocket 端点时：
+
+```python
+@register.ws("/call", auth=True)
+async def ws_call(self, ws: WebSocket):
+    ...
+```
+
+使用 `createWebSocket(path)` 连接——它会自动从 `localStorage` 读取 JWT token，并拼接到 `?token=` 查询参数中：
+
+```html
+<script>
+var PPC = window.PluginPageContext
+
+PPC.ready().then(function () {
+    var ws = PPC.createWebSocket('/call')
+
+    ws.onmessage = function (event) {
+        var data = JSON.parse(event.data)
+        console.log(data)
+    }
+
+    ws.onopen = function () {
+        ws.send(JSON.stringify({ type: 'hello' }))
+    }
+})
+</script>
+```
+
+> **注意：** 必须在 `ready()` resolve 之后再调用 `createWebSocket(path)`——`buildWsUrl()`（内部使用）在 context 未就绪时会抛出异常。token 来源是 `localStorage.jwt_token`，在 WebUI 登录时自动写入。
 
 ### 主题适配
 
