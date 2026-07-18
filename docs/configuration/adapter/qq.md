@@ -26,7 +26,3 @@ After saving the adapter configuration, click the toggle to enable the adapter. 
 等待账号 xxxxx 的登录成功事件
 账号 xxxxx 登录成功
 ```
-
-:::warning
-Currently the adapter does not automatically reload after configuration changes. You need to toggle it manually once for the changes to take effect
-:::
