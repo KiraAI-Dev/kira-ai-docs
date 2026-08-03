@@ -9,8 +9,13 @@ Welcome to the KiraAI community! We're glad you're here and look forward to your
 - [Issues](https://github.com/xxynet/KiraAI/issues) - Report bugs and request features
 - [Pull Requests](https://github.com/xxynet/KiraAI/pulls) - Contribute code and documentation
 
-### Plugins
-Since KiraAI is still in the early stage, we haven't implemented a plugin store yet. The plugin addresses of community developers will be listed below:
+# About Plugins
+
+- **Current Status**: KiraAI has currently implemented a plugin store.
+- **Background**: Due to historical legacy issues, the plugin addresses of certain community developers are not hosted within the store and will be listed separately below.
+- **Plugin Address**: [https://plugins.kira-ai.top/](https://plugins.kira-ai.top/)
+
+> **Note**: This is the designated official address for community-developed plugins.
 
 - [KiraOS_Plugin](https://github.com/LyaQanYi/KiraOS_Plugin) - KiraOS plugin, providing more powerful memory capabilities and Skills integration
 - [KiraAI_qzone_plugin](https://github.com/znq19/KiraAI_qzone_plugin) - QZone plugin, giving your AI robot complete QZone management capabilities
