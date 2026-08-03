@@ -9,8 +9,13 @@
 - [Issues](https://github.com/xxynet/KiraAI/issues) - 报告 bug 和请求新功能
 - [Pull Requests](https://github.com/xxynet/KiraAI/pulls) - 贡献代码和文档
 
-### 插件
-由于目前 KiraAI 还处于早期阶段，我们暂未实现插件商店，故社区开发者的插件地址将会列在下面：
+# 关于插件
+
+- **当前状态**：KiraAI 已实现插件商店。
+- **背景说明**：由于历史遗留原因，部分社区开发者的插件地址将单独列出。
+- **插件地址**：[https://plugins.kira-ai.top/](https://plugins.kira-ai.top/)
+
+> **注**：此为社区插件的官方地址。
 
 - [KiraOS_Plugin](https://github.com/LyaQanYi/KiraOS_Plugin) - KiraOS 插件，提供了更强大的记忆能力和 Skills 集成
 - [KiraAI_qzone_plugin](https://github.com/znq19/KiraAI_qzone_plugin) - QQ 空间插件，让你的 AI 机器人拥有完整的 QQ 空间管理能力
