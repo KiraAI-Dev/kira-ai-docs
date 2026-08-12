@@ -11,10 +11,14 @@ const ENGLISH_READING_SPEED = 200
 
 function removeFrontmatter(markdown: string) {
   const lines = markdown.split(/\r?\n/)
-  if (lines[0]?.trim() !== '---') return markdown
+  const firstLine = lines[0]?.replace(/^﻿/, '') ?? ''
+  if (!/^---\s*$/.test(firstLine)) return markdown
+
+  const isDelimiter = (line: string) =>
+    /^(?:---|\.\.\.)\s*$/.test(line)
 
   const endIndex = lines.findIndex(
-    (line, index) => index > 0 && (line.trim() === '---' || line.trim() === '...')
+    (line, index) => index > 0 && isDelimiter(line)
   )
 
   return endIndex === -1 ? markdown : lines.slice(endIndex + 1).join('\n')
