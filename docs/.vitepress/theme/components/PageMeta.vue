@@ -21,7 +21,11 @@ const lastUpdatedText = computed(() => {
 </script>
 
 <template>
-  <div v-if="wordCount > 0" class="page-meta" aria-label="Page information">
+  <div
+    v-if="wordCount > 0"
+    class="page-meta"
+    :aria-label="isChinese ? '页面信息' : 'Page information'"
+  >
     <span v-if="lastUpdatedText">
       {{ isChinese ? '更新' : 'Updated' }}: {{ lastUpdatedText }}
     </span>

@@ -1,55 +1,10 @@
 import { defineConfig } from 'vitepress'
-import type { Plugin } from 'vite'
+import MarkdownIt from 'markdown-it'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { getPageStatistics } from './utils/page-statistics'
 
-const CHINESE_READING_SPEED = 300
-const ENGLISH_READING_SPEED = 200
-
-function getPageStatistics(markdown: string) {
-  const content = markdown
-    .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`[^`]*`/g, '')
-    .replace(/!?(\[[^\]]*\])\([^)]*\)/g, '$1')
-    .replace(/<[^>]+>/g, '')
-    .replace(/[#>*_~|]/g, ' ')
-
-  const chineseCharacters = content.match(/[\u3400-\u9fff]/g)?.length ?? 0
-  const otherWords = content
-    .replace(/[\u3400-\u9fff]/g, ' ')
-    .match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu)?.length ?? 0
-  const wordCount = chineseCharacters + otherWords
-  const readingSpeed = chineseCharacters > otherWords
-    ? CHINESE_READING_SPEED
-    : ENGLISH_READING_SPEED
-
-  return {
-    wordCount,
-    readingTime: Math.max(1, Math.ceil(wordCount / readingSpeed))
-  }
-}
-
-function pageMetaPlugin(): Plugin {
-  return {
-    name: 'vitepress-page-meta',
-    enforce: 'pre',
-    transform(source, id) {
-      if (!id.endsWith('.md')) {
-        return
-      }
-
-      const frontmatter = source.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/)
-      const frontmatterSource = frontmatter?.[0] ?? ''
-      if (/(?:^|\n)pageMeta:\s*false\s*(?:\n|$)/.test(frontmatterSource)) {
-        return
-      }
-
-      const body = source.slice(frontmatterSource.length)
-      return frontmatterSource + body.replace(/^(#\s+.+)$/m, '$1\n\n<PageMeta />')
-    }
-  }
-}
+const statisticsParser = new MarkdownIt()
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -323,6 +278,25 @@ export default defineConfig({
   },
 
   markdown: {
+    config(md) {
+      const renderHeadingClose = md.renderer.rules.heading_close
+      md.renderer.rules.heading_close = (tokens, index, options, env, self) => {
+        const html = renderHeadingClose
+          ? renderHeadingClose(tokens, index, options, env, self)
+          : self.renderToken(tokens, index, options)
+
+        if (
+          tokens[index].tag !== 'h1' ||
+          env.pageMetaRendered ||
+          env.frontmatter?.pageMeta === false
+        ) {
+          return html
+        }
+
+        env.pageMetaRendered = true
+        return `${html}<PageMeta />`
+      }
+    },
     lineNumbers: true,
     toc: {
       level: [1, 2, 3]
@@ -337,7 +311,7 @@ export default defineConfig({
       return {
         frontmatter: {
           ...pageData.frontmatter,
-          ...getPageStatistics(source)
+          ...getPageStatistics(source, (markdown) => statisticsParser.parse(markdown, {}))
         }
       }
     } catch {
@@ -348,7 +322,6 @@ export default defineConfig({
   lastUpdated: true,
 
   vite: {
-    plugins: [pageMetaPlugin()],
     server: {
       port: 5173,
       host: true
