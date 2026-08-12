@@ -1,4 +1,10 @@
 import { defineConfig } from 'vitepress'
+import MarkdownIt from 'markdown-it'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { getPageStatistics } from './utils/page-statistics'
+
+const statisticsParser = new MarkdownIt()
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -272,9 +278,44 @@ export default defineConfig({
   },
 
   markdown: {
+    config(md) {
+      const renderHeadingClose = md.renderer.rules.heading_close
+      md.renderer.rules.heading_close = (tokens, index, options, env, self) => {
+        const html = renderHeadingClose
+          ? renderHeadingClose(tokens, index, options, env, self)
+          : self.renderToken(tokens, index, options)
+
+        if (
+          tokens[index].tag !== 'h1' ||
+          env.pageMetaRendered ||
+          env.frontmatter?.pageMeta === false
+        ) {
+          return html
+        }
+
+        env.pageMetaRendered = true
+        return `${html}<PageMeta />`
+      }
+    },
     lineNumbers: true,
     toc: {
       level: [1, 2, 3]
+    }
+  },
+
+  transformPageData(pageData, { siteConfig }) {
+    if (!pageData.filePath) return
+
+    try {
+      const source = readFileSync(resolve(siteConfig.srcDir, pageData.filePath), 'utf-8')
+      return {
+        frontmatter: {
+          ...pageData.frontmatter,
+          ...getPageStatistics(source, (markdown) => statisticsParser.parse(markdown, {}))
+        }
+      }
+    } catch {
+      return
     }
   },
 
