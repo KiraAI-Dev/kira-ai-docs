@@ -9,7 +9,7 @@ self.ctx.session_mgr      # SessionManager: session management
 self.ctx.adapter_mgr      # AdapterManager: adapter management
 self.ctx.persona_mgr      # PersonaManager: persona management
 self.ctx.provider_mgr     # ProviderManager: model provider management
-self.ctx.llm_api          # LLMClient: LLM client
+self.ctx.tool_mgr         # FuncToolManager: function tool management
 self.ctx.sticker_manager  # StickerManager: sticker management
 ```
 

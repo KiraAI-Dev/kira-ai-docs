@@ -9,7 +9,7 @@ self.ctx.session_mgr      # SessionManager：会话管理
 self.ctx.adapter_mgr      # AdapterManager：适配器管理
 self.ctx.persona_mgr      # PersonaManager：人格管理
 self.ctx.provider_mgr     # ProviderManager：模型提供商管理
-self.ctx.llm_api          # LLMClient：LLM 客户端
+self.ctx.tool_mgr         # FuncToolManager：函数工具管理
 self.ctx.sticker_manager  # StickerManager：贴纸管理
 ```
 
