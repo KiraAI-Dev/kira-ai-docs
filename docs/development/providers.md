@@ -29,9 +29,20 @@ The provider manifest file (`manifest.json`) is a configuration file used by Kir
     "version": "1.0.0",
     "author": "Author",
     "description": "Provider description",
-    "repo": "Provider repository URL or null"
+    "repo": "Provider repository URL or null",
+    "icon": "icon.svg",
+    "icon-dark": "icon-dark.svg"
 }
 ```
+
+### Manifest Icons
+
+`icon` and `icon-dark` are optional image paths, relative to the provider directory that contains `manifest.json`. They are shown in the WebUI provider type selector and provider cards.
+
+- `icon`: icon used in light mode.
+- `icon-dark`: icon used in dark mode. When omitted, the `icon` value is used in both themes.
+
+For security, an icon path must remain inside the provider directory: absolute paths and paths that resolve outside that directory are ignored. Supported formats are SVG, PNG, JPEG, GIF, WebP, AVIF, and ICO. Use a square SVG or image with enough contrast for its target theme.
 
 ## Provider Configuration Parameters Schema File
 

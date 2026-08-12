@@ -29,9 +29,20 @@ my_provider/
     "version": "1.0.0",
     "author": "作者",
     "description": "提供商描述",
-    "repo": "提供商仓库URL 或 null"
+    "repo": "提供商仓库URL 或 null",
+    "icon": "icon.svg",
+    "icon-dark": "icon-dark.svg"
 }
 ```
+
+### Manifest 图标
+
+`icon` 和 `icon-dark` 为可选图片路径，路径相对于包含 `manifest.json` 的提供商目录。它们会显示在 WebUI 的提供商类型下拉框和提供商卡片中。
+
+- `icon`：浅色模式使用的图标。
+- `icon-dark`：深色模式使用的图标；省略时，深色模式会回退使用 `icon`。
+
+为保证安全，图标路径必须位于提供商目录内：绝对路径及解析后超出该目录的路径会被忽略。支持 SVG、PNG、JPEG、GIF、WebP、AVIF 和 ICO。建议使用正方形 SVG 或图片，并确保在目标主题中具有足够对比度。
 
 ## 提供商配置参数Schema文件
 

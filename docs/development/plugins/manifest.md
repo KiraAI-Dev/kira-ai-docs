@@ -11,6 +11,8 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
   "author": "Your Name",
   "description": "Plugin description",
   "repo": "https://github.com/...",
+  "icon": "icon.svg",
+  "icon-dark": "icon-dark.svg",
   "locales": {
     "en/zh": {
       "display_name": "我的插件",
@@ -29,8 +31,12 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
 | `author`       | Author                                                       | No          |
 | `description`  | Plugin description                                           | No          |
 | `repo`         | Repository URL                                               | No          |
+| `icon`         | Image path relative to the plugin directory, used in light mode | No       |
+| `icon-dark`    | Image path relative to the plugin directory, used in dark mode; falls back to `icon` when omitted | No |
 | `locales`      | Localization overrides per locale, keyed by locale code (e.g. `zh`). Supported fields: `display_name`, `description` | No          |
 
 > The `locales` field allows providing translated values for `display_name` and `description`. The WebUI will automatically display the localized version based on the user's language preference.
 
 > `core_version` uses Python `requirements.txt` version specifier syntax, supporting operators like `>=`, `<=`, `>`, `<`, `==`, `!=`, `~=`, and combinations separated by commas. Omitting this field means no KiraAI version restriction.
+
+> Icon paths must stay inside the plugin directory. Absolute paths and paths outside that directory are ignored. SVG, PNG, JPEG, GIF, WebP, AVIF, and ICO are supported. Plugin icons are shown on WebUI plugin cards.
