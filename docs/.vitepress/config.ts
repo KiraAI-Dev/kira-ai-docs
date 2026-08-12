@@ -1,4 +1,55 @@
 import { defineConfig } from 'vitepress'
+import type { Plugin } from 'vite'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const CHINESE_READING_SPEED = 300
+const ENGLISH_READING_SPEED = 200
+
+function getPageStatistics(markdown: string) {
+  const content = markdown
+    .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`[^`]*`/g, '')
+    .replace(/!?(\[[^\]]*\])\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/[#>*_~|]/g, ' ')
+
+  const chineseCharacters = content.match(/[\u3400-\u9fff]/g)?.length ?? 0
+  const otherWords = content
+    .replace(/[\u3400-\u9fff]/g, ' ')
+    .match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu)?.length ?? 0
+  const wordCount = chineseCharacters + otherWords
+  const readingSpeed = chineseCharacters > otherWords
+    ? CHINESE_READING_SPEED
+    : ENGLISH_READING_SPEED
+
+  return {
+    wordCount,
+    readingTime: Math.max(1, Math.ceil(wordCount / readingSpeed))
+  }
+}
+
+function pageMetaPlugin(): Plugin {
+  return {
+    name: 'vitepress-page-meta',
+    enforce: 'pre',
+    transform(source, id) {
+      if (!id.endsWith('.md')) {
+        return
+      }
+
+      const frontmatter = source.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/)
+      const frontmatterSource = frontmatter?.[0] ?? ''
+      if (/(?:^|\n)pageMeta:\s*false\s*(?:\n|$)/.test(frontmatterSource)) {
+        return
+      }
+
+      const body = source.slice(frontmatterSource.length)
+      return frontmatterSource + body.replace(/^(#\s+.+)$/m, '$1\n\n<PageMeta />')
+    }
+  }
+}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -278,9 +329,26 @@ export default defineConfig({
     }
   },
 
+  transformPageData(pageData, { siteConfig }) {
+    if (!pageData.filePath) return
+
+    try {
+      const source = readFileSync(resolve(siteConfig.srcDir, pageData.filePath), 'utf-8')
+      return {
+        frontmatter: {
+          ...pageData.frontmatter,
+          ...getPageStatistics(source)
+        }
+      }
+    } catch {
+      return
+    }
+  },
+
   lastUpdated: true,
 
   vite: {
+    plugins: [pageMetaPlugin()],
     server: {
       port: 5173,
       host: true

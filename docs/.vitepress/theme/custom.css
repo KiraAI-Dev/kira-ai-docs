@@ -9,6 +9,33 @@
   --vp-c-brand-3: #6bd6a3;
 }
 
+.vp-doc .page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 32px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.vp-doc .page-meta span + span::before {
+  content: '·';
+  margin-right: 16px;
+  color: var(--vp-c-text-3);
+}
+
+@media (max-width: 480px) {
+  .vp-doc .page-meta {
+    display: grid;
+    gap: 2px;
+  }
+
+  .vp-doc .page-meta span + span::before {
+    content: none;
+  }
+}
+
 .vp-doc .custom-block {
   border-radius: 12px;
   padding: 16px 20px;
