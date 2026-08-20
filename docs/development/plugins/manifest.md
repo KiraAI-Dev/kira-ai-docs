@@ -10,6 +10,7 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
   "core_version": ">=1.0.0",
   "author": "Your Name",
   "description": "Plugin description",
+  "tags": ["utility", "automation"],
   "repo": "https://github.com/...",
   "icon": "icon.svg",
   "icon-dark": "icon-dark.svg",
@@ -30,6 +31,7 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
 | `core_version` | Required KiraAI version specifier, following [PEP 508](https://peps.python.org/pep-0508/) version specifier syntax (e.g. `>=1.0.0`, `>=1.0,<2.0`, `~=1.2`). If the requirement is not met, the plugin will not be loaded and an error message will be displayed in WebUI | No          |
 | `author`       | Author                                                       | No          |
 | `description`  | Plugin description                                           | No          |
+| `tags`         | List of tags used to categorize the plugin                   | No          |
 | `repo`         | Repository URL                                               | No          |
 | `icon`         | Image path relative to the plugin directory, used in light mode | No       |
 | `icon-dark`    | Image path relative to the plugin directory, used in dark mode; falls back to `icon` when omitted | No |

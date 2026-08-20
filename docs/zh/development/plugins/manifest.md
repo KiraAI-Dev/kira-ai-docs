@@ -10,6 +10,7 @@
   "core_version": ">=1.0.0",
   "author": "Your Name",
   "description": "插件功能描述",
+  "tags": ["utility", "automation"],
   "repo": "https://github.com/...",
   "icon": "icon.svg",
   "icon-dark": "icon-dark.svg",
@@ -30,6 +31,7 @@
 | `core_version` | 所需的 KiraAI 版本要求，遵循 [PEP 508](https://peps.python.org/pep-0508/) 版本说明符语法（如 `>=1.0.0`、`>=1.0,<2.0`、`~=1.2`）。不满足时插件不会被加载，WebUI 将显示错误信息 | 否   |
 | `author`       | 作者                                      | 否   |
 | `description`  | 插件描述                                  | 否   |
+| `tags`         | 用于分类插件的标签列表                    | 否   |
 | `repo`         | 仓库地址                                  | 否   |
 | `icon`         | 相对于插件目录的图片路径，浅色模式使用    | 否   |
 | `icon-dark`    | 相对于插件目录的图片路径，深色模式使用；省略时回退到 `icon` | 否 |
