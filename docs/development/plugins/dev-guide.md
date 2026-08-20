@@ -1,6 +1,11 @@
 # Plugin Development Guide
 
-KiraAI has powerful plugin extension capabilities, allowing developers to extend KiraAI's functionality and expand the capabilities of digital life by developing plugins.
+Welcome to KiraAI plugin development! KiraAI has powerful plugin extension capabilities, allowing developers to extend KiraAI's functionality and expand the capabilities of digital life by developing plugins.
+
+As an AI digital-life project, KiraAI plugins should aim to be:
+
+- **Perceptive**: Let the AI know what has happened and what the AI itself has sent. Avoid hard-coding message content whenever possible; the AI should generate it itself. For external integrations, ensure the AI can perceive external events.
+- **Actionable**: Let the AI autonomously invoke capabilities, such as function tools and XML tags. In principle, avoid mechanical interactions with the AI digital life through slash commands or similar mechanisms (and the system has no built-in command system).
 
 ## Overview
 
