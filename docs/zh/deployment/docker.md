@@ -29,13 +29,13 @@ docker run -d \
 ### 2. 方式二：获取docker-compose.yml文件
 
 ```bash
-curl -O https://raw.githubusercontent.com/xxynet/KiraAI/refs/heads/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/KiraAI-Dev/KiraAI/refs/heads/main/docker-compose.yml
 ```
 
 或者使用PowerShell：
 
 ```powershell
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/xxynet/KiraAI/refs/heads/main/docker-compose.yml -OutFile docker-compose.yml
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/KiraAI-Dev/KiraAI/refs/heads/main/docker-compose.yml -OutFile docker-compose.yml
 ```
 
 启动服务：

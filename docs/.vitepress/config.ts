@@ -34,7 +34,7 @@ export default defineConfig({
           { text: 'Deployment', link: '/deployment/windows' },
           { text: 'Development', link: '/development/guide' },
           { text: 'Plugins', link: 'https://plugins.kira-ai.top', target: '_blank' },
-          { text: 'GitHub', link: 'https://github.com/xxynet/KiraAI', target: '_blank' }
+          { text: 'GitHub', link: 'https://github.com/KiraAI-Dev/KiraAI', target: '_blank' }
         ],
         footer: {
           message: 'AGPL 3.0 License',
@@ -153,7 +153,7 @@ export default defineConfig({
           { text: '部署教程', link: '/zh/deployment/windows' },
           { text: '开发指南', link: '/zh/development/guide' },
           { text: '插件', link: 'https://plugins.kira-ai.top', target: '_blank' },
-          { text: 'GitHub', link: 'https://github.com/xxynet/KiraAI', target: '_blank' }
+          { text: 'GitHub', link: 'https://github.com/KiraAI-Dev/KiraAI', target: '_blank' }
         ],
         footer: {
           message: 'AGPL 3.0 License',
@@ -271,7 +271,7 @@ export default defineConfig({
     sidebar: [],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/xxynet/KiraAI' }
+      { icon: 'github', link: 'https://github.com/KiraAI-Dev/KiraAI' }
     ],
 
     search: {

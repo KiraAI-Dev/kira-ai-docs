@@ -114,7 +114,7 @@ cd /root
 ```
 ### 4. Clone the KiraAI Repository
 ```bash
-git clone https://github.com/xxynet/KiraAI.git
+git clone https://github.com/KiraAI-Dev/KiraAI.git
 ```
 If you see the error: `fatal: unable to access... Recv_failure: Software caused connection abort`
 it means the network connection failed — use a VPN/proxy.

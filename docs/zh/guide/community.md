@@ -5,9 +5,9 @@
 ## 加入我们的社区
 
 ### GitHub
-- [KiraAI 仓库](https://github.com/xxynet/KiraAI) - 给我们点星， fork 我们的代码，贡献您的力量！
-- [Issues](https://github.com/xxynet/KiraAI/issues) - 报告 bug 和请求新功能
-- [Pull Requests](https://github.com/xxynet/KiraAI/pulls) - 贡献代码和文档
+- [KiraAI 仓库](https://github.com/KiraAI-Dev/KiraAI) - 给我们点星， fork 我们的代码，贡献您的力量！
+- [Issues](https://github.com/KiraAI-Dev/KiraAI/issues) - 报告 bug 和请求新功能
+- [Pull Requests](https://github.com/KiraAI-Dev/KiraAI/pulls) - 贡献代码和文档
 
 ### 关于插件
 

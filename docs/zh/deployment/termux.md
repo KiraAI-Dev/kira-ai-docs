@@ -114,7 +114,7 @@ cd /root
 ```
 ### 4.克隆 KiraAI 仓库
 ```bash
-git clone https://github.com/xxynet/KiraAI.git
+git clone https://github.com/KiraAI-Dev/KiraAI.git
 ```
 如果显示报错信息fatal:unable to access... Recv_failure: Software caused connection abort
 就表示网络连接失败开梯子去吧

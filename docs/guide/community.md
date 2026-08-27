@@ -5,9 +5,9 @@ Welcome to the KiraAI community! We're glad you're here and look forward to your
 ## Join Our Community
 
 ### GitHub
-- [KiraAI Repository](https://github.com/xxynet/KiraAI) - Star us, fork us, and contribute!
-- [Issues](https://github.com/xxynet/KiraAI/issues) - Report bugs and request features
-- [Pull Requests](https://github.com/xxynet/KiraAI/pulls) - Contribute code and documentation
+- [KiraAI Repository](https://github.com/KiraAI-Dev/KiraAI) - Star us, fork us, and contribute!
+- [Issues](https://github.com/KiraAI-Dev/KiraAI/issues) - Report bugs and request features
+- [Pull Requests](https://github.com/KiraAI-Dev/KiraAI/pulls) - Contribute code and documentation
 
 ### About Plugins
 

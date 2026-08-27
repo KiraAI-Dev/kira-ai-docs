@@ -29,13 +29,13 @@ docker run -d \
 ### 3. Method 2: Get docker-compose.yml File
 
 ```bash
-curl -O https://raw.githubusercontent.com/xxynet/KiraAI/refs/heads/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/KiraAI-Dev/KiraAI/refs/heads/main/docker-compose.yml
 ```
 
 Or using PowerShell:
 
 ```powershell
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/xxynet/KiraAI/refs/heads/main/docker-compose.yml -OutFile docker-compose.yml
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/KiraAI-Dev/KiraAI/refs/heads/main/docker-compose.yml -OutFile docker-compose.yml
 ```
 
 Start the service:
