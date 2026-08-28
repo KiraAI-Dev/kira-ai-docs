@@ -18,53 +18,16 @@ API 密钥和自定义请求头会保存到 KiraAI 的运行时配置中。请�
 
 | 提供商类型 | 支持的模型类型 | 共享配置 |
 | --- | --- | --- |
-| OpenAI | LLM、TTS、图像、Embedding | Base URL、API 密钥、可选自定义请求头 |
+| OpenAI | LLM、TTS、图像生成、Embedding | Base URL、API 密钥、可选自定义请求头 |
 | Anthropic | LLM | Base URL、API 密钥、Anthropic API 版本、可选自定义请求头 |
 | DeepSeek | LLM | Base URL、API 密钥、可选自定义请求头 |
-| 阿里云百炼 | LLM、TTS、STT、图像、Embedding、Rerank | API 密钥、地域、可选业务空间 ID、可选 Base URL 覆盖、自定义请求头 |
-| 硅基流动 CN | LLM、TTS、STT、图像、Embedding、Rerank | Base URL、API 密钥 |
-| 火山引擎 | LLM、图像、视频、Embedding | Base URL、API 密钥 |
-| ModelScope（魔搭） | LLM、图像、Embedding | Base URL、API 密钥 |
+| 阿里云百炼 | LLM、TTS、STT、图像生成、Embedding、Rerank | API 密钥、地域、可选业务空间 ID、可选 Base URL 覆盖、自定义请求头 |
+| 硅基流动 CN | LLM、TTS、STT、图像生成、Embedding、Rerank | Base URL、API 密钥 |
+| 火山引擎 | LLM、图像生成、视频生成、Embedding | Base URL、API 密钥 |
+| ModelScope（魔搭） | LLM、图像生成、Embedding | Base URL、API 密钥 |
 | GPT-SoVITS | TTS | API 地址、可选参考音频路径和文本 |
 
-模型类型表示 KiraAI 的接入能力，并不代表该提供商的每个模型都支持该能力。例如，只有在所选模型支持当前提供商图像端点时，才应将它添加为图像模型。
-
-## 提供商字段
-
-### OpenAI 兼容提供商
-
-**OpenAI**、**DeepSeek**、**硅基流动 CN**、**火山引擎**和 **ModelScope** 都使用 Base URL 与 API 密钥。默认值指向各自的官方 API。仅在使用兼容端点时修改 Base URL，并保留该端点要求的版本或路径片段，例如 `/v1`。
-
-OpenAI 和 DeepSeek 还提供 **自定义请求头**。请填写 JSON 对象，例如：
-
-```json
-{
-  "X-Client-Name": "KiraAI"
-}
-```
-
-### Anthropic
-
-Anthropic 提供商使用 Messages API，而不是 OpenAI chat-completions 格式。
-
-- **Base URL** 默认为 `https://api.anthropic.com`。使用兼容服务时，请保留平台要求的路径前缀；例如 DeepSeek 的 Anthropic 兼容端点为 `https://api.deepseek.com/anthropic`。
-- **API 密钥** 会通过 `x-api-key` 请求头发送。
-- **Anthropic API 版本** 默认是 `2023-06-01`，仅在端点要求其他版本时修改。
-- **自定义请求头** 是可选 JSON 对象；同名字段会覆盖客户端默认请求头。
-
-### 阿里云百炼
-
-- **API 密钥**：从[百炼控制台](https://bailian.console.aliyun.com/)获取。
-- **地域**：选择 `beijing` 或 `singapore`。API 密钥必须与所选地域对应。
-- **业务空间 ID**：可选。填写后 KiraAI 使用业务空间专属端点；留空则使用 DashScope 公共端点。
-- **Base URL 覆盖**：可选的 OpenAI 兼容端点覆盖。留空时会根据地域和业务空间自动生成端点。
-- **自定义请求头**：可选，传递给 OpenAI 兼容客户端的 JSON 请求头。
-
-### GPT-SoVITS
-
-GPT-SoVITS 适用于本地部署或自行管理的 TTS API。**API 地址** 默认是 `http://127.0.0.1:9880/tts`。
-
-在提供商级填写 **参考音频路径** 和 **参考音频文本**，可将其作为全部 TTS 模型的默认值；模型级可以覆盖其中任一值。参考音频建议为 3–10 秒。
+模型类型表示 KiraAI 的接入能力，并不代表该提供商的每个模型都支持该能力。例如，只有在所选模型支持当前提供商的图像生成端点时，才应将它添加为图像生成模型。
 
 ## 模型配置
 
@@ -75,31 +38,16 @@ GPT-SoVITS 适用于本地部署或自行管理的 TTS API。**API 地址** 默�
 | LLM | 超时（通常为 120 秒）、可选温度，以及合并到请求体的可选 `extra_body` JSON |
 | TTS | 提供商特有的音色、语言、语速或参考音频设置 |
 | STT | 支持时可设置输入音频格式、采样率、语言提示与超时 |
-| 图像 | 尺寸和超时；部分提供商还提供端点、数量、提示词、风格或随机种子 |
+| 图像生成 | 尺寸和超时；部分提供商还提供端点、数量、提示词、风格或随机种子 |
 | Embedding | 超时和慢请求记录阈值；百炼还可设置向量维度 |
 | Rerank | 超时和提供商特有的结果选项 |
-| 视频 | 填写模型 ID；火山引擎当前没有额外模型字段 |
+| 视频生成 | 填写模型 ID；火山引擎当前没有额外模型字段 |
 
 `extra_body` 必须是 JSON 对象，用于端点专有的请求字段（例如提供商定义的联网搜索开关）。仅在所选模型的文档明确支持该字段时使用。
 
-### LLM 特有设置
-
-- **DeepSeek**：默认开启 **思考模式**。开启后温度参数不生效。**思考深度** 默认为 `high`；复杂 Agent 任务可选择 `max`。
-- **Anthropic**：**最大输出 Token 数** 默认为 4096，温度范围为 0–1。
-- **OpenAI、DeepSeek、阿里云百炼、硅基流动 CN、火山引擎和 ModelScope**：LLM 超时默认 120 秒；设置温度时可取 0–2。
-
-### 媒体与检索特有设置
-
-- **OpenAI 图像**：`v1/image` 用于图像生成 API；`v1/chat` 用于通过聊天补全返回图像的多模态聊天模型。图片尺寸仅对 `v1/image` 生效。
-- **硅基流动 CN 图像**：可设置图片尺寸和推理步数。其 TTS 模型需要 **声音 ID**；请按[硅基流动上传声音接口文档](https://docs.siliconflow.cn/cn/api-reference/audio/upload-voice)上传参考音频后获取。
-- **火山引擎图像**：可选设置图片尺寸；视频模型当前没有额外设置。
-- **ModelScope 图像**：可设置生成超时（默认 30 秒）。其 Embedding 的慢请求阈值可设为 `null`，以禁用慢请求日志。
-- **阿里云百炼**：支持最多的能力专有设置。TTS 包括音色 ID、音量、语速、音调、输出格式、语言提示、方言、指令、超时和 Markdown 过滤；STT 包括采样率、输入格式、语言提示和超时；图像包括尺寸、模型自动路由、数量、反向提示词、风格、提示词改写、水印、随机种子和超时；Embedding 支持可选向量维度；Rerank 支持返回文档原文和可选排序指令。
-- **GPT-SoVITS**：TTS 模型可覆盖提供商的参考音频和文本，并设置参考音频/合成文本语言、语速、Top-K、Top-P、温度和超时。
-
 ## 测试与排查
 
-保存模型后可使用模型健康检查。它会发送一个小型测试请求，并为 **LLM**、**TTS**、**Embedding** 和 **Rerank** 模型报告延迟；当前不支持为 STT、图像或视频模型执行健康检查。
+保存模型后可使用模型健康检查。它会发送一个小型测试请求，并为 **LLM**、**TTS**、**Embedding** 和 **Rerank** 模型报告延迟；当前不支持为 STT、图像生成或视频生成模型执行健康检查。
 
 如果提供商无法加载或请求失败：
 
