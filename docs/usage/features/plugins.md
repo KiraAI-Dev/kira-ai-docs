@@ -50,6 +50,38 @@ KiraAI ships with several builtin plugins:
 | `file`          | File operations (read, write, list)              |
 | `session_tools` | Cross-session awareness and management           |
 
+## Install and manage plugins
+
+Open **Plugins** in WebUI and use the **Plugins** tab to manage installed plugins:
+
+1. Click **Add Plugin** to install from a GitHub repository URL or upload a plugin ZIP archive.
+2. Review the plugin's name, author, version, required KiraAI version, repository, and requested behavior before installing it.
+3. Use the switch on its card to enable or disable it. Use **Configure** when the plugin provides a configuration schema, and **Reload** after changing plugin files or settings.
+4. Use **Update** when an update is available. Only uninstall plugins marked as uninstallable; builtin plugins are part of KiraAI and cannot be removed from WebUI.
+
+The **Plugin Store** tab lists plugins from the selected store source. It can install or update listed plugins and lets you add, select, or remove store sources. Store data may be cached temporarily when a source is unavailable.
+
+> Only install plugins from sources you trust. A plugin can run code, register tools, access configured services, and install its declared dependencies.
+
+## MCP, Skills, and scope
+
+The **MCP** and **Skills** tabs are managed alongside plugins:
+
+- [MCP](/usage/features/mcp) connects external tool servers to KiraAI.
+- [Skills](/usage/features/skills) adds reusable task instructions for the agent.
+- The **Scope** tab controls whether each MCP server or Skill is global, allowed only for selected sessions, or denied for selected sessions.
+
+Use a narrow scope for capabilities that access files, external services, or private information.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Installation fails | Verify the repository/archive is valid, reachable, and compatible with the current KiraAI version; then inspect **Logs** for dependency or load errors. |
+| Plugin is installed but inactive | Confirm its switch is enabled. If it has configuration, save valid values and reload the plugin. |
+| A plugin page or widget is missing | Check that the plugin is enabled and loaded successfully; then refresh the browser and inspect **Logs**. |
+| A tool is unavailable in one session | Check the MCP/Skill scope and the enabled state of the corresponding capability. |
+
 ## Plugin Development
 
 You can develop your own plugins according to the [Plugin Development Guide](/development/plugins/dev-guide).
