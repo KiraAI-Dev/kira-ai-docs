@@ -35,5 +35,5 @@ data/plugins/
 2. **Tool 函数签名**：`(self, event: KiraMessageBatchEvent, param1: type, param2: type)` — 第一个参数固定为触发该工具调用的事件对象。
 3. **优先级**：`SYS_HIGH` 和 `SYS_LOW` 为系统保留，用户插件使用 `HIGH / MEDIUM / LOW` 或自定义整数。
 4. **不要阻塞事件循环**：所有 I/O 操作使用 `await`，CPU 密集型任务用 `asyncio.to_thread()`。
-5. **terminate 必须清理**：取消后台任务、关闭连接，避免资源泄漏。
+5. **terminate 必须清理**：取消后台任务、关闭连接，避免资源泄漏。通过 `self.ctx` 注册的 Provider 和 Adapter 类型会由 KiraAI 自动注销；除非已在运行期提前撤回组件，否则不要在 `terminate()` 中再次注销它们。
 6. **配置热重载**：修改配置后系统会重新调用 `initialize()`，插件应支持重入初始化。

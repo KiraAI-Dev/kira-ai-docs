@@ -36,5 +36,5 @@ data/plugins/
 2. **Tool function signature**: `(self, event: KiraMessageBatchEvent, param1: type, param2: type)` — the first parameter is always the event object that triggered the tool call.
 3. **Priority**: `SYS_HIGH` and `SYS_LOW` are reserved for the system. Plugin developers should use `HIGH / MEDIUM / LOW` or custom integers.
 4. **Do not block the event loop**: Use `await` for all I/O operations; use `asyncio.to_thread()` for CPU-intensive work.
-5. **Clean up in terminate**: Cancel background tasks, close connections — avoid resource leaks.
+5. **Clean up in terminate**: Cancel background tasks and close connections — avoid resource leaks. Provider and Adapter types registered through `self.ctx` are unregistered by KiraAI automatically; do not unregister them again from `terminate()` unless they were withdrawn earlier at runtime.
 6. **Config hot-reload**: The system calls `initialize()` again after a config change. Plugins must support re-entrant initialization.

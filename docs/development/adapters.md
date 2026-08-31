@@ -1,5 +1,7 @@
 # Adapter Development Guide
 
+Built-in adapters live in the core source tree. A plugin can package an Adapter in its own directory and register it with `await self.ctx.register_adapter("relative/path")`; see [PluginContext API](./plugins/context#register-plugin-owned-providers-and-adapters) for the required layout, lifecycle, and explicit unregistration.
+
 ## Manifest Icons
 
 Adapters can optionally define icons in their `manifest.json`:

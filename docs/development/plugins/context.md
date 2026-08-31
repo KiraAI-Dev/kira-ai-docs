@@ -85,6 +85,50 @@ class MyPlugin(BasePlugin):
         )
 ```
 
+## Register Plugin-Owned Providers and Adapters
+
+A plugin can expose its own Provider and Adapter types without placing files in KiraAI core directories. Register a component from the plugin lifecycle through `self.ctx`; do not hard-code an absolute path or derive another plugin's ID.
+
+```text
+data/plugins/my_plugin/
+├── main.py
+├── provider/
+│   ├── manifest.json
+│   ├── provider.py       # Or __init__.py; defines a BaseProvider subclass
+│   ├── schema.json       # Optional
+│   └── icon.svg          # Optional manifest icon
+└── adapter/
+    ├── manifest.json
+    ├── adapter.py        # Or __init__.py; defines an IMAdapter or SocialMediaAdapter subclass
+    ├── schema.json       # Optional
+    └── icon.svg          # Optional manifest icon
+```
+
+The path passed to the API is relative to the calling plugin root. The plugin ID is resolved by KiraAI from the calling module, and the registration is recorded as a component owned by that plugin.
+
+```python
+class MyPlugin(BasePlugin):
+    async def initialize(self):
+        await self.ctx.register_provider("provider")
+        await self.ctx.register_adapter("adapter")
+```
+
+Each component directory must contain a `manifest.json` with a non-empty `name`. The name becomes the Provider format or Adapter platform and must not collide with another registered type. `provider.py` must define a `BaseProvider` subclass; `adapter.py` must define an `IMAdapter` or `SocialMediaAdapter` subclass. Only classes defined by that component module are selected.
+
+Provider and Adapter manifests use the same optional `icon` and `icon-dark` fields as built-in components. Paths are relative to the component's `manifest.json`, must remain inside that component directory, and are displayed by the WebUI when the type is available.
+
+### Lifecycle and Explicit Unregistration
+
+KiraAI records registered types in the owning plugin's component registry. When the plugin is disabled or terminated, KiraAI stops runtime Adapter instances, unregisters Adapter types, and then unregisters Provider types automatically. Stored Provider and Adapter configuration is kept, but a type cannot be enabled or instantiated until its plugin is enabled again.
+
+A plugin normally does **not** call these methods from `terminate()`. Use explicit unregistration only when the plugin wants to withdraw a component while it is still running:
+
+```python
+await self.ctx.unregister_adapter("my_adapter_platform")
+await self.ctx.unregister_provider("my_provider_format")
+```
+
+Both registration and unregistration are asynchronous and raise an error for invalid paths, invalid component classes, unavailable managers, or conflicting type names. Let initialization failures surface in the plugin logs instead of silently ignoring them.
 ## Background Tasks
 
 For polling or long-running tasks, use `asyncio.create_task()` and cancel in `terminate()`:

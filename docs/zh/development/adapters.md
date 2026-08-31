@@ -1,5 +1,7 @@
 # 适配器开发指南
 
+内置适配器位于核心源码目录。插件可以把 Adapter 打包在自己的目录中，并通过 `await self.ctx.register_adapter("相对路径")` 注册；所需目录结构、生命周期和显式注销请参阅 [PluginContext API](./plugins/context#注册插件自有的-provider-和-adapter)。
+
 ## Manifest 图标
 
 适配器可以在 `manifest.json` 中可选配置图标：

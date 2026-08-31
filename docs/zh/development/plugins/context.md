@@ -85,6 +85,50 @@ class MyPlugin(BasePlugin):
         )
 ```
 
+## 注册插件自有的 Provider 和 Adapter
+
+插件可以提供自己的 Provider 和 Adapter 类型，无需把文件放到 KiraAI 核心目录。应在插件生命周期中通过 `self.ctx` 显式注册组件；不要写死绝对路径，也不要自行推导其他插件的 ID。
+
+```text
+data/plugins/my_plugin/
+├── main.py
+├── provider/
+│   ├── manifest.json
+│   ├── provider.py       # 也可使用 __init__.py；定义 BaseProvider 子类
+│   ├── schema.json       # 可选
+│   └── icon.svg          # 可选的 manifest 图标
+└── adapter/
+    ├── manifest.json
+    ├── adapter.py        # 也可使用 __init__.py；定义 IMAdapter 或 SocialMediaAdapter 子类
+    ├── schema.json       # 可选
+    └── icon.svg          # 可选的 manifest 图标
+```
+
+传给 API 的路径相对于调用该 API 的插件根目录。KiraAI 会根据调用模块解析插件 ID，并把注册记录到该插件拥有的组件注册表中。
+
+```python
+class MyPlugin(BasePlugin):
+    async def initialize(self):
+        await self.ctx.register_provider("provider")
+        await self.ctx.register_adapter("adapter")
+```
+
+每个组件目录都必须包含 `manifest.json`，并提供非空的 `name`。该名称分别成为 Provider format 或 Adapter platform，不能与其他已注册类型冲突。`provider.py` 必须定义 `BaseProvider` 子类；`adapter.py` 必须定义 `IMAdapter` 或 `SocialMediaAdapter` 子类。系统只会选择由该组件模块自身定义的类。
+
+Provider 和 Adapter 的 manifest 同样支持可选的 `icon` 和 `icon-dark`。路径相对于组件的 `manifest.json`，必须保持在组件目录内；类型可用时，WebUI 会显示这些图标。
+
+### 生命周期与显式注销
+
+KiraAI 会把已注册类型记录到所属插件的组件注册表。插件被禁用或终止时，KiraAI 会自动停止 Adapter 运行实例、注销 Adapter 类型，然后注销 Provider 类型。已保存的 Provider 和 Adapter 配置会保留，但在插件重新启用前，对应类型无法启用或实例化。
+
+通常**不需要**在插件的 `terminate()` 中调用这些方法。只有插件仍在运行、但需要主动撤回某个组件时，才使用显式注销：
+
+```python
+await self.ctx.unregister_adapter("my_adapter_platform")
+await self.ctx.unregister_provider("my_provider_format")
+```
+
+注册与注销均为异步操作；路径不合法、组件类不合法、管理器不可用或类型名称冲突时会抛出异常。不要静默忽略初始化错误，应让它们出现在插件日志中。
 ## 后台任务
 
 需要定时轮询或长期运行的任务，使用 `asyncio.create_task()` 并在 `terminate()` 中取消：

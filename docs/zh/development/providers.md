@@ -6,7 +6,7 @@
 
 ## 文件结构
 
-所有提供商都位于 `core/provider/src` 目录下。
+内置提供商位于 `core/provider/src` 目录。插件也可以把 Provider 保留在自己的目录中，并通过 `await self.ctx.register_provider("相对路径")` 显式注册；组件目录和生命周期请参阅 [PluginContext API](./plugins/context#注册插件自有的-provider-和-adapter)。
 
 KiraAI 提供商的文件结构如下：
 ```

@@ -6,7 +6,7 @@ This chapter will guide you through developing a KiraAI provider.
 
 ## File Structure
 
-All providers are located in the `core/provider/src` directory.
+Built-in providers are located in the `core/provider/src` directory. A plugin can instead keep a Provider inside its own directory and explicitly register it through `await self.ctx.register_provider("relative/path")`; see [PluginContext API](./plugins/context#register-plugin-owned-providers-and-adapters) for the component layout and lifecycle.
 
 The file structure of a KiraAI provider is as follows:
 ```
