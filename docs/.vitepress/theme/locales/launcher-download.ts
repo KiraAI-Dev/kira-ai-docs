@@ -12,6 +12,9 @@ const messages = {
     history: 'Need an older version? Browse all GitHub releases',
     releaseNotes: 'View release notes',
     installer: 'Installer',
+    portable: 'Portable version',
+    installerDescription: 'Standard installation package',
+    diskImageDescription: 'Recommended installation package for macOS',
     diskImage: 'Disk image',
     archive: 'Archive',
     appImage: 'AppImage',
@@ -20,7 +23,10 @@ const messages = {
     linuxArchive: 'Linux archive',
     debDescription: 'Debian / Ubuntu / Linux Mint',
     rpmDescription: 'Fedora / RHEL / openSUSE',
+    appImageDescription: 'Run without installation on most Linux distributions',
+    notAvailable: 'Not available for this release',
     windows: 'Windows',
+    portableDescription: 'Run without installation',
     macos: 'macOS',
     linux: 'Linux',
     unknown: 'this system',
@@ -28,7 +34,7 @@ const messages = {
     arm64: 'ARM64',
     universal: 'Universal',
   },
-  'zh-CN': {
+  zh: {
     dateLocale: 'zh-CN',
     loading: '正在同步 GitHub 的最新版本信息…',
     unavailable: '暂时无法获取最新发布包。',
@@ -41,6 +47,9 @@ const messages = {
     history: '需要旧版本？浏览所有 GitHub Releases',
     releaseNotes: '查看版本更新说明',
     installer: '安装程序',
+    portable: '便携版',
+    installerDescription: '标准安装包',
+    diskImageDescription: '推荐的 macOS 安装包',
     diskImage: '磁盘镜像',
     archive: '压缩包',
     appImage: 'AppImage',
@@ -49,7 +58,10 @@ const messages = {
     linuxArchive: 'Linux 压缩包',
     debDescription: 'Debian / Ubuntu / Linux Mint',
     rpmDescription: 'Fedora / RHEL / openSUSE',
+    appImageDescription: '适用于大多数 Linux 发行版，无需安装即可运行',
+    notAvailable: '此版本暂未提供',
     windows: 'Windows',
+    portableDescription: '无需安装，直接运行',
     macos: 'macOS',
     linux: 'Linux',
     unknown: '当前系统',
@@ -62,5 +74,8 @@ const messages = {
 export type LauncherDownloadMessages = (typeof messages)[keyof typeof messages]
 
 export function resolveLauncherDownloadMessages(locale: string): LauncherDownloadMessages {
-  return messages[locale as keyof typeof messages] ?? messages.en
+  const language = locale.split('-')[0]
+  return messages[locale as keyof typeof messages]
+    ?? messages[language as keyof typeof messages]
+    ?? messages.en
 }

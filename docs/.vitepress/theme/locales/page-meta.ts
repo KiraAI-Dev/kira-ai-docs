@@ -9,7 +9,7 @@ const messages = {
     minute: 'min',
     minutes: 'mins',
   },
-  'zh-CN': {
+  zh: {
     dateLocale: 'zh-CN',
     pageInformation: '页面信息',
     updated: '更新',
@@ -24,5 +24,8 @@ const messages = {
 export type PageMetaMessages = (typeof messages)[keyof typeof messages]
 
 export function resolvePageMetaMessages(locale: string): PageMetaMessages {
-  return messages[locale as keyof typeof messages] ?? messages.en
+  const language = locale.split('-')[0]
+  return messages[locale as keyof typeof messages]
+    ?? messages[language as keyof typeof messages]
+    ?? messages.en
 }

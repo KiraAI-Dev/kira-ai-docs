@@ -33,13 +33,18 @@ interface DownloadAsset {
   architecture: Architecture
 }
 
-interface DownloadGroup {
+interface DownloadVariant {
   id: string
-  platform: Exclude<Platform, 'unknown'>
   kind: string
   title: string
   description: string
   assets: DownloadAsset[]
+}
+
+interface DownloadPlatform {
+  id: Exclude<Platform, 'unknown'>
+  title: string
+  variants: DownloadVariant[]
 }
 
 const { lang } = useData()
@@ -74,12 +79,15 @@ function classifyAsset(asset: GitHubAsset): DownloadAsset | null {
     architecture: getArchitecture(asset.name),
   }
 
-  if (normalized.endsWith('.exe')) return { ...base, platform: 'windows', kind: 'installer' }
+  if (normalized.endsWith('.exe')) {
+    const isInstaller = normalized.includes('setup') || normalized.includes('installer') || normalized.includes('install') || normalized.includes('nsis')
+    return { ...base, platform: 'windows', kind: isInstaller ? 'installer' : 'portable' }
+  }
   if (normalized.endsWith('.dmg')) return { ...base, platform: 'macos', kind: 'diskImage' }
   if (normalized.endsWith('.appimage')) return { ...base, platform: 'linux', kind: 'appImage' }
   if (normalized.endsWith('.deb')) return { ...base, platform: 'linux', kind: 'deb' }
   if (normalized.endsWith('.rpm')) return { ...base, platform: 'linux', kind: 'rpm' }
-  if (normalized.endsWith('.zip')) return { ...base, platform: 'macos', kind: 'archive' }
+  if (normalized.endsWith('.zip')) return { ...base, platform: 'macos', kind: 'portable' }
   if (normalized.endsWith('.tar.gz') || normalized.endsWith('.tgz')) return { ...base, platform: 'linux', kind: 'linuxArchive' }
 
   return null
@@ -103,36 +111,59 @@ const recommendedAssets = computed(() => {
 
   const matchingAssets = assets.value.filter(asset => asset.platform === platform.value && isCompatible(asset))
   const preferredKinds: Record<Exclude<Platform, 'unknown'>, string[]> = {
-    windows: ['installer'],
-    macos: ['diskImage', 'archive'],
+    windows: ['installer', 'portable'],
+    macos: ['diskImage', 'portable'],
     linux: ['appImage', 'deb', 'rpm', 'linuxArchive'],
   }
 
+  const recommended = [] as DownloadAsset[]
   for (const kind of preferredKinds[platform.value]) {
     const match = matchingAssets.find(asset => asset.kind === kind)
-    if (match) return [match]
+    if (match) recommended.push(match)
   }
 
-  return []
+  return recommended
 })
 
-const downloadGroups = computed<DownloadGroup[]>(() => {
-  const groupDefinitions: Array<Omit<DownloadGroup, 'assets'>> = [
-    { id: 'windows-installer', platform: 'windows', kind: 'installer', title: text.value.installer, description: text.value.windows },
-    { id: 'macos-disk-image', platform: 'macos', kind: 'diskImage', title: text.value.diskImage, description: text.value.macos },
-    { id: 'macos-archive', platform: 'macos', kind: 'archive', title: text.value.archive, description: text.value.macos },
-    { id: 'linux-appimage', platform: 'linux', kind: 'appImage', title: text.value.appImage, description: text.value.linux },
-    { id: 'linux-deb', platform: 'linux', kind: 'deb', title: text.value.deb, description: text.value.debDescription },
-    { id: 'linux-rpm', platform: 'linux', kind: 'rpm', title: text.value.rpm, description: text.value.rpmDescription },
-    { id: 'linux-archive', platform: 'linux', kind: 'linuxArchive', title: text.value.linuxArchive, description: text.value.linux },
+const downloadPlatforms = computed<DownloadPlatform[]>(() => {
+  const platformDefinitions: Array<
+    Omit<DownloadPlatform, 'variants'> & { variants: Array<Omit<DownloadVariant, 'assets'>> }
+  > = [
+    {
+      id: 'windows',
+      title: text.value.windows,
+      variants: [
+        { id: 'windows-installer', kind: 'installer', title: text.value.installer, description: text.value.installerDescription },
+        { id: 'windows-portable', kind: 'portable', title: text.value.portable, description: text.value.portableDescription },
+      ],
+    },
+    {
+      id: 'macos',
+      title: text.value.macos,
+      variants: [
+        { id: 'macos-installer', kind: 'diskImage', title: text.value.installer, description: text.value.diskImageDescription },
+        { id: 'macos-portable', kind: 'portable', title: text.value.portable, description: text.value.portableDescription },
+      ],
+    },
+    {
+      id: 'linux',
+      title: text.value.linux,
+      variants: [
+        { id: 'linux-installer', kind: 'deb', title: text.value.installer, description: text.value.debDescription },
+        { id: 'linux-portable', kind: 'appImage', title: text.value.portable, description: text.value.appImageDescription },
+      ],
+    },
   ]
 
-  return groupDefinitions.map(group => ({
-    ...group,
-    assets: assets.value
-      .filter(asset => asset.platform === group.platform && asset.kind === group.kind)
-      .sort((a, b) => archRank(b.architecture) - archRank(a.architecture) || a.name.localeCompare(b.name)),
-  })).filter(group => group.assets.length > 0)
+  return platformDefinitions.map(platformDefinition => ({
+    ...platformDefinition,
+    variants: platformDefinition.variants.map(variant => ({
+      ...variant,
+      assets: assets.value
+        .filter(asset => asset.platform === platformDefinition.id && asset.kind === variant.kind)
+        .sort((a, b) => archRank(b.architecture) - archRank(a.architecture) || a.name.localeCompare(b.name)),
+    })),
+  })).filter(platformDefinition => platformDefinition.variants.some(variant => variant.assets.length > 0))
 })
 
 function archRank(value: Architecture) {
@@ -208,39 +239,47 @@ onMounted(() => {
           <button type="button" @click="scrollToDownloads">{{ text.otherSystem }}</button>
         </div>
 
-        <a
-          v-for="asset in recommendedAssets"
-          :key="asset.name"
-          :href="asset.url"
-          class="launcher-download__primary-action"
-        >
-          <span>
-            <strong>{{ text.download }}</strong>
-            <small>{{ kindName(asset.kind) }} · {{ architectureLabel(asset.architecture) }}</small>
-          </span>
-          <em>{{ formatFileSize(asset.size) }}</em>
-        </a>
+        <div class="launcher-download__primary-actions">
+          <a
+            v-for="asset in recommendedAssets"
+            :key="asset.name"
+            :href="asset.url"
+            class="launcher-download__primary-action"
+          >
+            <span>
+              <strong>{{ text.download }}</strong>
+              <small>{{ kindName(asset.kind) }} · {{ architectureLabel(asset.architecture) }}</small>
+            </span>
+            <em>{{ formatFileSize(asset.size) }}</em>
+          </a>
+        </div>
       </section>
 
       <section id="launcher-downloads" class="launcher-download__all-downloads">
         <h2>{{ text.allDownloads }}</h2>
-        <p v-if="!downloadGroups.length" class="launcher-download__empty">{{ text.noFiles }}</p>
-        <div v-else class="launcher-download__groups">
-          <section v-for="group in downloadGroups" :key="group.id" class="launcher-download__group">
+        <p v-if="!downloadPlatforms.length" class="launcher-download__empty">{{ text.noFiles }}</p>
+        <div v-else class="launcher-download__platforms">
+          <section v-for="platformDownload in downloadPlatforms" :key="platformDownload.id" class="launcher-download__platform">
             <header>
-              <div>
-                <h3>{{ group.title }}</h3>
-                <p>{{ group.description }}</p>
-              </div>
+              <h3>{{ platformDownload.title }}</h3>
             </header>
-            <div class="launcher-download__assets">
-              <a v-for="asset in group.assets" :key="asset.name" :href="asset.url" :title="asset.name">
-                <span>
-                  <strong>{{ architectureLabel(asset.architecture) }}</strong>
-                  <small>{{ asset.name }}</small>
-                </span>
-                <em>{{ formatFileSize(asset.size) }}</em>
-              </a>
+            <div class="launcher-download__variants">
+              <section v-for="variant in platformDownload.variants" :key="variant.id" class="launcher-download__variant">
+                <header>
+                  <h4>{{ variant.title }}</h4>
+                  <p>{{ variant.description }}</p>
+                </header>
+                <p v-if="!variant.assets.length" class="launcher-download__unavailable">{{ text.notAvailable }}</p>
+                <div v-else class="launcher-download__assets">
+                  <a v-for="asset in variant.assets" :key="asset.name" :href="asset.url" :title="asset.name">
+                    <span>
+                      <strong>{{ architectureLabel(asset.architecture) }}</strong>
+                      <small>{{ asset.name }}</small>
+                    </span>
+                    <em>{{ formatFileSize(asset.size) }}</em>
+                  </a>
+                </div>
+              </section>
             </div>
           </section>
         </div>
@@ -272,6 +311,7 @@ onMounted(() => {
 .launcher-download__recommendation-header strong span { display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 5px; background: var(--vp-c-brand-soft); color: var(--vp-c-brand-1); font-size: .76rem; vertical-align: middle; }
 .launcher-download__recommendation-header button { padding: 0; border: 0; border-bottom: 1px dashed var(--vp-c-text-3); background: transparent; color: var(--vp-c-text-2); cursor: pointer; font: inherit; font-size: .85rem; }
 .launcher-download__recommendation-header button:hover { color: var(--vp-c-brand-1); border-color: var(--vp-c-brand-1); }
+.launcher-download__primary-actions { display: grid; gap: 12px; }
 .launcher-download__primary-action, .launcher-download__assets a { display: flex; align-items: center; justify-content: space-between; gap: 14px; text-decoration: none; }
 .launcher-download__primary-action { padding: 18px 20px; border: 1.5px solid var(--vp-c-brand-1); border-radius: 10px; background: var(--vp-c-bg); transition: transform .2s, background .2s, box-shadow .2s; }
 .launcher-download__primary-action:hover { background: var(--vp-c-brand-soft); transform: translateY(-2px); box-shadow: 0 6px 18px color-mix(in srgb, var(--vp-c-brand-1) 15%, transparent); }
@@ -280,10 +320,14 @@ onMounted(() => {
 .launcher-download__primary-action em, .launcher-download__assets em { padding: 4px 8px; border-radius: 5px; background: var(--vp-c-default-soft); color: var(--vp-c-text-2); font-size: .8rem; font-style: normal; white-space: nowrap; }
 .launcher-download__all-downloads { margin-top: 44px; scroll-margin-top: 90px; }
 .launcher-download__all-downloads h2 { margin: 0 0 22px; border: 0; padding: 0; font-size: 1.5rem; }
-.launcher-download__groups { display: grid; gap: 28px; }
-.launcher-download__group > header { margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid var(--vp-c-divider); }
-.launcher-download__group h3 { margin: 0; border: 0; padding: 0; font-size: 1.08rem; }
-.launcher-download__group p { margin: 4px 0 0; color: var(--vp-c-text-2); font-size: .85rem; }
+.launcher-download__platforms { display: grid; gap: 36px; }
+.launcher-download__platform > header { margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--vp-c-divider); }
+.launcher-download__platform h3 { margin: 0; border: 0; padding: 0; font-size: 1.25rem; }
+.launcher-download__variants { display: grid; gap: 24px; }
+.launcher-download__variant > header { margin-bottom: 11px; }
+.launcher-download__variant h4 { margin: 0; border: 0; padding: 0; font-size: 1.02rem; }
+.launcher-download__variant p { margin: 4px 0 0; color: var(--vp-c-text-2); font-size: .85rem; }
+.launcher-download__unavailable { padding: 12px 14px; border: 1px dashed var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-3) !important; }
 .launcher-download__assets { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
 .launcher-download__assets a { padding: 12px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); transition: border-color .2s ease, background-color .2s ease; }
 .launcher-download__assets a:hover { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg-alt); }
