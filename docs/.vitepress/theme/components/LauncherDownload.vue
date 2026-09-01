@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import MarkdownIt from 'markdown-it'
 import { useData } from 'vitepress'
 import { resolveLauncherDownloadMessages } from '../locales/launcher-download'
 
@@ -54,11 +55,18 @@ const release = ref<GitHubRelease | null>(null)
 const assets = ref<DownloadAsset[]>([])
 const platform = ref<Platform>('unknown')
 const architecture = ref<Architecture>('x64')
+const releaseNotesRenderer = new MarkdownIt({ html: false, linkify: true })
+releaseNotesRenderer.renderer.rules.link_open = (tokens, index, options, _environment, self) => {
+  tokens[index].attrSet('target', '_blank')
+  tokens[index].attrSet('rel', 'noopener noreferrer')
+  return self.renderToken(tokens, index, options)
+}
 
 const text = computed(() => resolveLauncherDownloadMessages(lang.value))
 
 const platformName = computed(() => text.value[platform.value] ?? text.value.unknown)
 const architectureName = computed(() => text.value[architecture.value])
+const renderedReleaseNotes = computed(() => release.value?.body ? releaseNotesRenderer.render(release.value.body) : '')
 
 function getArchitecture(name: string): Architecture {
   const normalized = name.toLowerCase()
@@ -255,6 +263,11 @@ onMounted(() => {
             <em>{{ formatFileSize(asset.size) }}</em>
           </a>
         </div>
+
+        <details v-if="release.body" class="launcher-download__notes">
+          <summary>{{ text.releaseNotes }}</summary>
+          <div class="launcher-download__notes-content" v-html="renderedReleaseNotes" />
+        </details>
       </section>
 
       <section id="launcher-downloads" class="launcher-download__all-downloads">
@@ -286,11 +299,6 @@ onMounted(() => {
           </section>
         </div>
       </section>
-
-      <details v-if="release.body" class="launcher-download__notes">
-        <summary>{{ text.releaseNotes }}</summary>
-        <pre>{{ release.body }}</pre>
-      </details>
 
       <p class="launcher-download__history"><a :href="releasesUrl" target="_blank" rel="noreferrer">{{ text.history }} ↗</a></p>
     </template>
@@ -335,9 +343,14 @@ onMounted(() => {
 .launcher-download__assets a:hover { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg-alt); }
 .launcher-download__assets strong { color: var(--vp-c-text-1); font-size: .92rem; }
 .launcher-download__assets small { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.launcher-download__notes { margin-top: 34px; color: var(--vp-c-text-2); }
+.launcher-download__notes { margin-top: 20px; color: var(--vp-c-text-2); }
 .launcher-download__notes summary { cursor: pointer; font-weight: 600; }
-.launcher-download__notes pre { overflow: auto; max-height: 360px; padding: 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); white-space: pre-wrap; font: inherit; font-size: .85rem; line-height: 1.6; }
+.launcher-download__notes-content { overflow: auto; max-height: 360px; margin-top: 12px; padding: 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg); font-size: .9rem; line-height: 1.65; }
+.launcher-download__notes-content :deep(h1), .launcher-download__notes-content :deep(h2), .launcher-download__notes-content :deep(h3), .launcher-download__notes-content :deep(h4) { margin: 0 0 12px; border: 0; padding: 0; font-size: 1.05rem; color: var(--vp-c-text-1); }
+.launcher-download__notes-content :deep(p), .launcher-download__notes-content :deep(ul), .launcher-download__notes-content :deep(ol) { margin: 0 0 12px; }
+.launcher-download__notes-content :deep(ul), .launcher-download__notes-content :deep(ol) { padding-left: 22px; }
+.launcher-download__notes-content :deep(a) { color: var(--vp-c-brand-1); font-weight: 500; }
+.launcher-download__notes-content :deep(p:last-child), .launcher-download__notes-content :deep(ul:last-child), .launcher-download__notes-content :deep(ol:last-child) { margin-bottom: 0; }
 .launcher-download__history { margin-top: 28px; text-align: center; }
 .launcher-download__history a { color: var(--vp-c-brand-1); font-weight: 600; }
 @keyframes launcher-spin { to { transform: rotate(360deg); } }
