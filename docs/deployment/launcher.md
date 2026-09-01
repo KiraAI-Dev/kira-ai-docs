@@ -4,12 +4,10 @@
 The KiraAI Launcher is still under development. Features and usage may change.
 :::
 
-[KiraAI Launcher](https://github.com/KiraAI-Dev/KiraAI-Launcher) provides a convenient graphical launcher for deploying and starting KiraAI.
+[KiraAI Launcher](https://github.com/KiraAI-Dev/KiraAI-Launcher) provides a convenient graphical launcher for deploying and starting KiraAI. Choose an installer for your system below to download it directly.
 
-## Project Address
-
-- GitHub Repository: [https://github.com/KiraAI-Dev/KiraAI-Launcher](https://github.com/KiraAI-Dev/KiraAI-Launcher)
+<LauncherDownload />
 
 ## Instructions
 
-Please refer to the documentation in the repository above for specific installation and usage instructions.
+After installation, please refer to the documentation in the [KiraAI Launcher repository](https://github.com/KiraAI-Dev/KiraAI-Launcher).
