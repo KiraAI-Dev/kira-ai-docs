@@ -123,7 +123,7 @@ const recommendedAssets = computed(() => {
   const preferredKinds: Record<Exclude<Platform, 'unknown'>, string[]> = {
     windows: ['installer', 'portable'],
     macos: ['diskImage', 'portable'],
-    linux: ['appImage', 'deb', 'rpm', 'linuxArchive'],
+    linux: ['deb', 'rpm', 'appImage', 'linuxArchive'],
   }
 
   const recommended = [] as DownloadAsset[]
