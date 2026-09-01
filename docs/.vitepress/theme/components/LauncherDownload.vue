@@ -36,7 +36,7 @@ interface DownloadAsset {
 
 interface DownloadVariant {
   id: string
-  kind: string
+  kinds: string[]
   title: string
   description: string
   assets: DownloadAsset[]
@@ -143,24 +143,24 @@ const downloadPlatforms = computed<DownloadPlatform[]>(() => {
       id: 'windows',
       title: text.value.windows,
       variants: [
-        { id: 'windows-installer', kind: 'installer', title: text.value.installer, description: text.value.installerDescription },
-        { id: 'windows-portable', kind: 'portable', title: text.value.portable, description: text.value.portableDescription },
+        { id: 'windows-installer', kinds: ['installer'], title: text.value.installer, description: text.value.installerDescription },
+        { id: 'windows-portable', kinds: ['portable'], title: text.value.portable, description: text.value.portableDescription },
       ],
     },
     {
       id: 'macos',
       title: text.value.macos,
       variants: [
-        { id: 'macos-installer', kind: 'diskImage', title: text.value.installer, description: text.value.diskImageDescription },
-        { id: 'macos-portable', kind: 'portable', title: text.value.portable, description: text.value.portableDescription },
+        { id: 'macos-installer', kinds: ['diskImage'], title: text.value.installer, description: text.value.diskImageDescription },
+        { id: 'macos-portable', kinds: ['portable'], title: text.value.portable, description: text.value.portableDescription },
       ],
     },
     {
       id: 'linux',
       title: text.value.linux,
       variants: [
-        { id: 'linux-installer', kind: 'deb', title: text.value.installer, description: text.value.debDescription },
-        { id: 'linux-portable', kind: 'appImage', title: text.value.portable, description: text.value.appImageDescription },
+        { id: 'linux-installer', kinds: ['deb', 'rpm'], title: text.value.installer, description: text.value.linuxInstallerDescription },
+        { id: 'linux-portable', kinds: ['appImage', 'linuxArchive'], title: text.value.portable, description: text.value.linuxPortableDescription },
       ],
     },
   ]
@@ -170,7 +170,7 @@ const downloadPlatforms = computed<DownloadPlatform[]>(() => {
     variants: platformDefinition.variants.map(variant => ({
       ...variant,
       assets: assets.value
-        .filter(asset => asset.platform === platformDefinition.id && asset.kind === variant.kind)
+        .filter(asset => asset.platform === platformDefinition.id && variant.kinds.includes(asset.kind))
         .sort((a, b) => archRank(b.architecture) - archRank(a.architecture) || a.name.localeCompare(b.name)),
     })),
   })).filter(platformDefinition => platformDefinition.variants.some(variant => variant.assets.length > 0))
