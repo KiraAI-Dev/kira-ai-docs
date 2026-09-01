@@ -87,7 +87,9 @@ function classifyAsset(asset: GitHubAsset): DownloadAsset | null {
   if (normalized.endsWith('.appimage')) return { ...base, platform: 'linux', kind: 'appImage' }
   if (normalized.endsWith('.deb')) return { ...base, platform: 'linux', kind: 'deb' }
   if (normalized.endsWith('.rpm')) return { ...base, platform: 'linux', kind: 'rpm' }
-  if (normalized.endsWith('.zip')) return { ...base, platform: 'macos', kind: 'portable' }
+  if (normalized.endsWith('.zip')) {
+    return normalized.includes('portable') ? { ...base, platform: 'macos', kind: 'portable' } : null
+  }
   if (normalized.endsWith('.tar.gz') || normalized.endsWith('.tgz')) return { ...base, platform: 'linux', kind: 'linuxArchive' }
 
   return null
