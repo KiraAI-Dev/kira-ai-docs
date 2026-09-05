@@ -20,14 +20,14 @@ class MyPlugin(BasePlugin):
 
 | type           | 说明                           | 额外参数                  |
 | -------------- | ------------------------------ | ------------------------- |
-| `string`       | 单行文本输入框                 | —                         |
-| `integer`      | 整数输入框                     | —                         |
-| `float`        | 浮点数输入框                   | —                         |
+| `string`       | 单行文本输入框，设置 `options` 时变为下拉选择 | `options: [...]` |
+| `integer`      | 整数输入框，设置 `options` 时变为下拉选择 | `options: [...]` |
+| `float`        | 浮点数输入框，设置 `options` 时变为下拉选择 | `options: [...]` |
 | `sensitive`    | 密码形式隐藏（用于 API Key 等）| —                         |
-| `switch`       | 布尔开关                       | —                         |
+| `switch`       | 布尔开关（别名：`bool`、`boolean`） | —                    |
 | `list`         | 多行列表（每行一条）           | —                         |
-| `enum`         | 下拉选项                       | `options: [...]`          |
-| `multi_select` | 多选下拉框                     | `options: [...]`          |
+| `enum`         | **已废弃。** 下拉选项，保留向后兼容。请改用 `string`/`integer`/`float` + `options` | `options: [...]` |
+| `multi_select` | 多选下拉框                     | `options: [...]`，或 `source: "model"/"persona"/"session"`（`source: "model"` 时需 `model_type`） |
 | `json`         | JSON 编辑器                    | —                         |
 | `yaml`         | YAML 编辑器                    | —                         |
 | `editor`       | 代码/文本编辑器                | `language: "python"`      |
@@ -35,8 +35,26 @@ class MyPlugin(BasePlugin):
 | `markdown`     | Markdown 编辑器                | —                         |
 | `model_select` | 模型选择器                     | `model_type: "llm"/"tts"/"stt"/"image"/"embedding"/"rerank"/"video"` |
 | `persona_select` | 人设选择器（保存人设 ID）    | —                                                       |
+| `session_select` | 会话选择器（保存会话 ID，如 `qq:dm:123`） | —                                          |
 | `section`      | 可折叠分组区域                 | `collapsed`, `fields`     |
 | `info`         | 只读信息提示（不存储数据）     | `level: "info"/"warning"` |
+
+> 类型别名会在加载 schema 时自动归一化：`text` → `string`、`int` → `integer`、`bool`/`boolean` → `switch`。
+
+### 下拉选项
+
+`string`、`integer`、`float` 在提供 `options` 列表时渲染为下拉选择框，否则为普通输入框。如果 `default` 不在 `options` 中，则使用第一个选项。
+
+### 动态选项来源
+
+`multi_select` 可通过 `source` 动态加载候选项，替代静态 `options` 列表：
+
+| `source`    | 候选项                                     | 保存值                    |
+| ----------- | ------------------------------------------ | ------------------------- |
+| （不设置）  | 静态 `options: [...]`                      | 选项值本身                |
+| `"model"`   | `model_type`（默认 `"llm"`）下已配置的模型 | `provider:model` 标识     |
+| `"persona"` | 所有人设                                   | 人设 ID                   |
+| `"session"` | 活跃会话                                   | 会话 ID（如 `qq:dm:123`） |
 
 ## 示例 schema.json
 
@@ -67,11 +85,17 @@ class MyPlugin(BasePlugin):
     "hint": "每次最多返回的结果条数"
   },
   "mode": {
-    "type": "enum",
+    "type": "string",
     "name": "模式",
     "default": "auto",
     "options": ["auto", "manual", "disabled"],
     "hint": "运行模式"
+  },
+  "target_session": {
+    "type": "session_select",
+    "name": "目标会话",
+    "default": "",
+    "hint": "内部会话 ID，如 qq:dm:123"
   },
   "allowed_sessions": {
     "type": "list",
@@ -92,6 +116,14 @@ class MyPlugin(BasePlugin):
     "default": ["chat"],
     "options": ["chat", "search", "tools", "vision"],
     "hint": "选择启用的功能"
+  },
+  "tts_models": {
+    "type": "multi_select",
+    "name": "TTS 模型",
+    "default": [],
+    "source": "model",
+    "model_type": "tts",
+    "hint": "可用于语音合成的模型"
   },
   "section_advanced": {
     "type": "section",

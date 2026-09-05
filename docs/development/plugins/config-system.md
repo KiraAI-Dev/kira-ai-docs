@@ -20,14 +20,14 @@ class MyPlugin(BasePlugin):
 
 | type           | Description                          | Extra Parameters          |
 | -------------- | ------------------------------------ | ------------------------- |
-| `string`       | Single-line text input               | —                         |
-| `integer`      | Integer input                        | —                         |
-| `float`        | Float input                          | —                         |
+| `string`       | Single-line text input, or a dropdown when `options` is set | `options: [...]` |
+| `integer`      | Integer input, or a dropdown when `options` is set | `options: [...]` |
+| `float`        | Float input, or a dropdown when `options` is set | `options: [...]` |
 | `sensitive`    | Password-style hidden input (API keys) | —                       |
-| `switch`       | Boolean toggle                       | —                         |
+| `switch`       | Boolean toggle (aliases: `bool`, `boolean`) | —                 |
 | `list`         | Multi-line list (one item per line)  | —                         |
-| `enum`         | Dropdown selector                    | `options: [...]`          |
-| `multi_select` | Multi-selection dropdown             | `options: [...]`          |
+| `enum`         | **Deprecated.** Dropdown selector, kept for backward compatibility. Use `string`/`integer`/`float` with `options` instead | `options: [...]` |
+| `multi_select` | Multi-selection dropdown             | `options: [...]`, or `source: "model"/"persona"/"session"` (+ `model_type` when `source: "model"`) |
 | `json`         | JSON editor                          | —                         |
 | `yaml`         | YAML editor                          | —                         |
 | `editor`       | Code/text editor                     | `language: "python"`      |
@@ -35,8 +35,26 @@ class MyPlugin(BasePlugin):
 | `markdown`     | Markdown editor                      | —                         |
 | `model_select` | Model selector                       | `model_type: "llm"/"tts"/"stt"/"image"/"embedding"/"rerank"/"video"` |
 | `persona_select` | Persona selector (saves persona ID) | —                       |
+| `session_select` | Session selector (saves the session ID, e.g. `qq:dm:123`) | — |
 | `section`      | Collapsible section for grouping fields | `collapsed`, `fields`  |
 | `info`         | Read-only informational callout (no data storage) | `level: "info"/"warning"` |
+
+> Type aliases are normalized when the schema is loaded: `text` → `string`, `int` → `integer`, `bool`/`boolean` → `switch`.
+
+### Dropdown Options
+
+`string`, `integer` and `float` fields render as a dropdown when an `options` list is provided, and as a plain input otherwise. If `default` is not one of the options, the first option is used instead.
+
+### Dynamic Select Sources
+
+`multi_select` can load its candidates dynamically via `source` instead of a static `options` list:
+
+| `source`    | Candidates                                          | Saved value                  |
+| ----------- | --------------------------------------------------- | ---------------------------- |
+| (omitted)   | static `options: [...]`                             | the option values            |
+| `"model"`   | configured models of `model_type` (default `"llm"`) | `provider:model` identifiers |
+| `"persona"` | all personas                                        | persona IDs                  |
+| `"session"` | active sessions                                     | session IDs like `qq:dm:123` |
 
 ## Example schema.json
 
@@ -67,11 +85,17 @@ class MyPlugin(BasePlugin):
     "hint": "Maximum number of results returned per query"
   },
   "mode": {
-    "type": "enum",
+    "type": "string",
     "name": "Mode",
     "default": "auto",
     "options": ["auto", "manual", "disabled"],
     "hint": "Operating mode"
+  },
+  "target_session": {
+    "type": "session_select",
+    "name": "Target Session",
+    "default": "",
+    "hint": "Internal session ID, e.g. qq:dm:123"
   },
   "allowed_sessions": {
     "type": "list",
@@ -92,6 +116,14 @@ class MyPlugin(BasePlugin):
     "default": ["chat"],
     "options": ["chat", "search", "tools", "vision"],
     "hint": "Select enabled features"
+  },
+  "tts_models": {
+    "type": "multi_select",
+    "name": "TTS Models",
+    "default": [],
+    "source": "model",
+    "model_type": "tts",
+    "hint": "Models available for text-to-speech"
   },
   "section_advanced": {
     "type": "section",
