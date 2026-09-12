@@ -97,6 +97,7 @@ export default defineConfig({
                },
               { text: 'Provider', link: '/configuration/provider' },
               { text: 'Chat Settings', link: '/configuration/chat' },
+              { text: 'Memory Settings', link: '/configuration/memory' },
             ]
           },
           {
@@ -217,6 +218,7 @@ export default defineConfig({
               },
               { text: '提供商', link: '/zh/configuration/provider' },
               { text: '聊天设置', link: '/zh/configuration/chat' },
+              { text: '记忆设置', link: '/zh/configuration/memory' },
             ]
           },
           {
