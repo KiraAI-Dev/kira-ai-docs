@@ -2,6 +2,8 @@
 
 Providers connect KiraAI to model APIs. A provider instance stores credentials and an API endpoint once; the models you add under it select the model ID, capability, and model-level options.
 
+> Both the OpenAI and Anthropic providers can connect to third-party model services compatible with their respective API formats. Choose the provider that matches the service API, then enter its Base URL and API key.
+
 ## Add a provider
 
 1. Open **Providers** in the WebUI and select **Add Provider**.
