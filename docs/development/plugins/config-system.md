@@ -37,7 +37,7 @@ class MyPlugin(BasePlugin):
 | `persona_select` | Persona selector (saves persona ID) | —                       |
 | `session_select` | Session selector (saves the session ID, e.g. `qq:dm:123`) | — |
 | `section`      | Collapsible section for grouping fields | `collapsed`, `fields`  |
-| `info`         | Read-only informational callout (no data storage) | `level: "info"/"warning"` |
+| `info`         | Read-only informational callout (no data storage) | `level: "info"/"warning"`; `name`/`hint` support `[text](url)` links |
 
 > Type aliases are normalized when the schema is loaded: `text` → `string`, `int` → `integer`, `bool`/`boolean` → `switch`.
 
@@ -219,11 +219,19 @@ Section child fields also support `locales` for i18n.
     "locales": {
       "zh": { "name": "即将废弃", "hint": "此选项将在未来版本中移除。\n请迁移到新的插件配置。" }
     }
+  },
+  "docs_link": {
+    "type": "info",
+    "name": "Documentation",
+    "hint": "See the [documentation](https://docs.kira-ai.top) for details.",
+    "level": "info"
   }
 }
 ```
 
 > `info` fields are skipped during config save/load and validation. They support `\n` in `hint` for line breaks.
+>
+> `name` and `hint` also support markdown links: `[text](url)` renders as a clickable link that opens in a new tab. Only `http(s)` URLs are parsed — bare URLs, other schemes, and other markdown syntax are displayed as-is.
 
 ## Locales
 

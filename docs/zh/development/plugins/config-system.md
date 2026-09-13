@@ -37,7 +37,7 @@ class MyPlugin(BasePlugin):
 | `persona_select` | 人设选择器（保存人设 ID）    | —                                                       |
 | `session_select` | 会话选择器（保存会话 ID，如 `qq:dm:123`） | —                                          |
 | `section`      | 可折叠分组区域                 | `collapsed`, `fields`     |
-| `info`         | 只读信息提示（不存储数据）     | `level: "info"/"warning"` |
+| `info`         | 只读信息提示（不存储数据）     | `level: "info"/"warning"`；`name`/`hint` 支持 `[文字](url)` 链接 |
 
 > 类型别名会在加载 schema 时自动归一化：`text` → `string`、`int` → `integer`、`bool`/`boolean` → `switch`。
 
@@ -219,11 +219,19 @@ Section 的子字段同样支持 `locales` 国际化。
     "locales": {
       "zh": { "name": "即将废弃", "hint": "此选项将在未来版本中移除。\n请迁移到新的插件配置。" }
     }
+  },
+  "docs_link": {
+    "type": "info",
+    "name": "文档",
+    "hint": "详情请参阅[官方文档](https://docs.kira-ai.top/zh)。",
+    "level": "info"
   }
 }
 ```
 
 > `info` 字段在配置保存/加载和校验时会被跳过。`hint` 支持 `\n` 换行。
+>
+> `name` 和 `hint` 还支持 Markdown 链接：`[文字](url)` 会渲染为可点击链接，在新标签页打开。仅解析 `http(s)` 链接，裸 URL、其他协议及其他 Markdown 语法按原文显示。
 
 ## Locales
 
