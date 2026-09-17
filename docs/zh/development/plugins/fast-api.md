@@ -273,7 +273,7 @@ def info_page(self):
 | 参数    | 类型                          | 默认值 | 说明                                     |
 | ------- | ----------------------------- | ------ | ---------------------------------------- |
 | `label` | `str` 或 `dict[str, str]`    | 必填   | 显示文本，支持多语言 dict                |
-| `icon`  | `str`                         | `None` | Element Plus 图标组件名                  |
+| `icon`  | `str`                         | `None` | Element Plus 图标名，或自定义 `.svg` 图标路径（见下文） |
 | `order` | `int`                         | `100`  | 排序值（越小越靠前）                     |
 
 #### 多语言 label
@@ -289,6 +289,27 @@ def info_page(self):
 def dashboard(self):
     return PluginPage.from_folder("./web")
 ```
+
+#### 自定义 SVG 图标
+
+`icon` 也支持传入插件内的 `.svg` 文件路径（相对于插件根目录，允许带前导斜杠）：
+
+```python
+@register.page("/dashboard", menu=PageMenu(
+    label={"zh": "仪表盘", "en": "Dashboard"},
+    icon="assets/flask-conical.svg",
+    order=10
+))
+def dashboard(self):
+    return PluginPage.from_folder("./web")
+```
+
+图标通过 WebUI 的认证接口下发，并在侧边栏内联渲染，因此能自动适配深浅色主题：使用 `stroke="currentColor"` 或 `fill="currentColor"`（如 [Lucide](https://lucide.dev) 图标的做法），图标会跟随侧边栏文字颜色，包括选中态。
+
+编写 SVG 时注意：
+
+- 使用表现属性（`fill`、`stroke`、`stroke-width` 等）。出于防 CSS 注入的考虑，CSS `<style>` 元素和 `style` 属性会在清洗时被移除，对应样式会静默失效。
+- 文件必须位于插件根目录内，越界路径会被拒绝。
 
 #### dict 兼容
 

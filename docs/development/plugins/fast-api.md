@@ -273,7 +273,7 @@ def info_page(self):
 | Parameter | Type                       | Default | Description                                  |
 | --------- | -------------------------- | ------- | -------------------------------------------- |
 | `label`   | `str` or `dict[str, str]` | Required | Display text, supports i18n dict            |
-| `icon`    | `str`                      | `None`  | Element Plus icon component name             |
+| `icon`    | `str`                      | `None`  | Element Plus icon name, or a path to a custom `.svg` icon (see below) |
 | `order`   | `int`                      | `100`   | Sort order (lower = higher)                  |
 
 #### Multi-language label
@@ -289,6 +289,27 @@ def info_page(self):
 def dashboard(self):
     return PluginPage.from_folder("./web")
 ```
+
+#### Custom SVG icon
+
+`icon` also accepts a path to an `.svg` file inside the plugin, relative to the plugin root (a leading slash is tolerated):
+
+```python
+@register.page("/dashboard", menu=PageMenu(
+    label={"zh": "仪表盘", "en": "Dashboard"},
+    icon="assets/flask-conical.svg",
+    order=10
+))
+def dashboard(self):
+    return PluginPage.from_folder("./web")
+```
+
+The icon is served through an authenticated WebUI endpoint and rendered inline in the sidebar, so it adapts to light/dark themes automatically: use `stroke="currentColor"` or `fill="currentColor"` (as [Lucide](https://lucide.dev) icons do) and the icon follows the sidebar text color, including its active state.
+
+When authoring the SVG:
+
+- Use presentation attributes (`fill`, `stroke`, `stroke-width`, ...). CSS `<style>` elements and `style` attributes are stripped during sanitization (to prevent CSS injection) and silently lose their effect.
+- Keep the file inside the plugin root; paths escaping it are rejected.
 
 #### Dict compatibility
 
