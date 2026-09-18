@@ -389,6 +389,7 @@ window.PluginPageContext.ready().then(function (ctx) {
 | `api.post(endpoint, body?)`               | `Promise<any>`    | POST request                                       |
 | `api.upload(endpoint, file, fieldName?)`  | `Promise<any>`    | Upload file via FormData                           |
 | `api.delete(endpoint)`                    | `Promise<any>`    | DELETE request                                     |
+| `api.download(endpoint, filename?)`       | `void`            | GET file download (native streaming download)      |
 
 ### WebSocket Authentication
 
@@ -454,6 +455,23 @@ window.PluginPageContext.api.get('/hello').then(function (data) {
     console.log(data)
 })
 ```
+
+### Downloading Files
+
+`api.download(endpoint, filename?)` requests the plugin endpoint with GET and hands the transfer to the browser's native download manager — the file streams to disk with the regular download progress UI, which suits file export endpoints:
+
+```javascript
+// against @register.api("GET", "/files/export") returning a file stream with a Content-Disposition header
+window.PluginPageContext.api.download('files/export', 'report.zip')
+```
+
+Notes:
+
+- **GET endpoints only**: the helper navigates a hidden `<a>`, so only GET requests are issued; routes registered with other methods (e.g. POST) are never invoked — implement those with a fetch → blob flow instead.
+- **Filename resolution** follows the browser's download algorithm: a `Content-Disposition: attachment; filename=` response header takes precedence, and the `filename` argument is only a best-effort hint used when the server names no attachment.
+- **Auth**: the same-origin navigation carries the session cookie automatically.
+- **Error handling**: non-2xx responses are downloaded as-is (plain navigation semantics); use fetch + blob if you need fine-grained error handling.
+- **Plugins can also trigger downloads themselves**: the plugin page iframe sandbox already includes `allow-downloads`, so this helper is not required — a plain `<a href="/api/plugin/{id}/files/export">` link (same-origin, cookie carried automatically, streamed) or an `<a download>` pointing to a data:/blob: URL (data already in memory, saved instantly on click) works too. `api.download` is simply a convenience wrapper for these mechanisms.
 
 ### Complete Example
 

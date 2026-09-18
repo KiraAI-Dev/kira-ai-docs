@@ -389,6 +389,7 @@ window.PluginPageContext.ready().then(function (ctx) {
 | `api.post(endpoint, body?)`             | `Promise<any>`    | POST 请求                                |
 | `api.upload(endpoint, file, fieldName?)`| `Promise<any>`    | 上传文件（FormData）                     |
 | `api.delete(endpoint)`                  | `Promise<any>`    | DELETE 请求                              |
+| `api.download(endpoint, filename?)`     | `void`            | GET 下载文件（浏览器原生流式下载）       |
 
 ### WebSocket 鉴权
 
@@ -454,6 +455,23 @@ window.PluginPageContext.api.get('/hello').then(function (data) {
     console.log(data)
 })
 ```
+
+### 下载文件
+
+`api.download(endpoint, filename?)` 以 GET 方式请求插件端点，并把传输交给浏览器原生下载管理器——边传输边下载、带原生进度条，适合文件导出类接口：
+
+```javascript
+// 对应 @register.api("GET", "/files/export")，返回文件流并带 Content-Disposition 响应头
+window.PluginPageContext.api.download('files/export', 'report.zip')
+```
+
+注意：
+
+- **仅支持 GET 端点**：内部通过隐藏 `<a>` 导航实现，只会发起 GET 请求，注册为 POST 等其他方法的端点不会被调用——此类场景请在插件页面自行使用 fetch → blob 实现。
+- **文件名规则**遵循浏览器下载算法：响应头 `Content-Disposition: attachment; filename=` 优先；`filename` 参数只是兜底提示，仅在服务器未指定附件文件名时生效。
+- **认证**：同源导航自动携带会话 cookie，无需额外处理。
+- **错误处理**：非 2xx 响应会原样被当作文件下载（与普通导航行为一致）；如需精细的错误提示，请改用 fetch + blob。
+- **插件也可以自行触发下载**：插件页面的 iframe sandbox 已包含 `allow-downloads`，因此不依赖本 helper 也能触发浏览器下载——例如 `<a href="/api/plugin/{id}/files/export">` 直链（同源自动携带 cookie，流式下载），或指向 data:/blob: URL 的 `<a download>` 链接（数据已在内存中，点击即时保存）。`api.download` 只是上述方式的便捷封装。
 
 ### 完整示例
 
