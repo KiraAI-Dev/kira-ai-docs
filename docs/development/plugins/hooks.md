@@ -27,7 +27,42 @@ This project is in active development; the decorator system may change.
 | `@on.tool_result()`      | After a tool call returns its result                 | `(self, event: KiraMessageBatchEvent, result: ToolResult, *args, **kwargs)` |
 | `@on.message_sent()`     | After a single message is sent to the IM platform    | `(self, event: KiraMessageBatchEvent, action: MessageChain, result: KiraIMSentResult, *args, **kwargs)` |
 | `@on.step_result()`      | After each agent step completes                      | `(self, event: KiraMessageBatchEvent, step_result: KiraStepResult, *args, **kwargs)` |
-| `@on.final_result()`     | After the final message result is generated          | *(Not dispatched in current version — reserved for future use)* |
+| `@on.final_result()`     | After the final message result is generated          | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)` |
+
+### Comment events
+
+`@on.comment()` maps to `EventType.ON_COMMENT` and receives `KiraCommentEvent`, separately from ordinary IM messages. `comment_id` and `comment_content` describe the current comment, `target` identifies the resource, and `root_comment_id` identifies the root comment. A top-level comment defaults to its own ID as the root.
+
+```python
+from core.adapter import FeedCapability
+from core.chat import KiraCommentEvent, MessageChain
+from core.chat.message_elements import Text
+from core.plugin import BasePlugin, Priority, on
+
+class MyCommentPlugin(BasePlugin):
+    @on.comment(priority=Priority.HIGH)
+    async def reply_comment(self, event: KiraCommentEvent, *args, **kwargs):
+        adapter = self.ctx.adapter_mgr.get_adapter(event.adapter_name)
+        if adapter is None:
+            return
+        try:
+            feed = adapter.get_capability(FeedCapability)
+        except ValueError:
+            return
+        event.stop()
+        await feed.send_comment(
+            MessageChain([Text("Received")]),
+            event.target,
+            root=event.root_comment_id,
+            parent=event.comment_id,
+        )
+```
+
+This is a Hook excerpt; implement the plugin lifecycle methods too. Once you decide to own the comment, call `event.stop()` before the first external `await` to prevent duplicate replies. The fixed text only demonstrates routing; let a model generate actual interaction content as appropriate. The built-in comment plugin uses `SYS_LOW` for unclaimed comments; user plugins should use ordinary priorities.
+
+### Final result events
+
+`@on.final_result()` is active and fires after the Agent finishes a turn. It receives `KiraFinalResult` (imported from `core.chat.message_utils`), whose `step_results` contains the turn's step results. It runs before context persistence. Calling `event.stop()` here only suppresses remaining final-result handlers; it cannot undo delivered messages or skip the workflow's context write.
 
 ### Lifecycle Events
 

@@ -27,7 +27,42 @@ from core.plugin import on, Priority
 | `@on.tool_result()`      | 工具调用返回结果后                 | `(self, event: KiraMessageBatchEvent, result: ToolResult, *args, **kwargs)` |
 | `@on.message_sent()`     | 单条消息发送到 IM 平台后           | `(self, event: KiraMessageBatchEvent, action: MessageChain, result: KiraIMSentResult, *args, **kwargs)` |
 | `@on.step_result()`      | Agent 每步结束后                   | `(self, event: KiraMessageBatchEvent, step_result: KiraStepResult, *args, **kwargs)` |
-| `@on.final_result()`     | 最终消息结果生成后                 | *（当前版本未触发 —— 预留事件）*                    |
+| `@on.final_result()`     | 最终消息结果生成后                 | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)`                    |
+
+### 评论事件
+
+`@on.comment()` 对应 `EventType.ON_COMMENT`，处理函数接收 `KiraCommentEvent`，与普通 IM 消息使用不同入口。事件中的 `comment_id`、`comment_content` 表示当前评论，`target` 表示目标资源，`root_comment_id` 表示根评论；顶层评论默认以自身 ID 作为根评论。
+
+```python
+from core.adapter import FeedCapability
+from core.chat import KiraCommentEvent, MessageChain
+from core.chat.message_elements import Text
+from core.plugin import BasePlugin, Priority, on
+
+class MyCommentPlugin(BasePlugin):
+    @on.comment(priority=Priority.HIGH)
+    async def reply_comment(self, event: KiraCommentEvent, *args, **kwargs):
+        adapter = self.ctx.adapter_mgr.get_adapter(event.adapter_name)
+        if adapter is None:
+            return
+        try:
+            feed = adapter.get_capability(FeedCapability)
+        except ValueError:
+            return
+        event.stop()
+        await feed.send_comment(
+            MessageChain([Text("Received")]),
+            event.target,
+            root=event.root_comment_id,
+            parent=event.comment_id,
+        )
+```
+
+这是 Hook 片段，插件还需实现生命周期方法。确定接管评论后，在首次外部 `await` 前调用 `event.stop()`，避免后续插件重复回复。示例的固定文字用于展示路由；实际交互内容应按插件需求交给模型生成。内置默认评论插件以 `SYS_LOW` 处理尚未被接管的评论，用户插件应使用普通优先级。
+
+### 最终结果事件
+
+`@on.final_result()` 已实际启用，在一轮 Agent 执行结束后触发，接收 `KiraFinalResult`（从 `core.chat.message_utils` 导入），其 `step_results` 汇总本轮各步结果。它位于上下文持久化之前；此处 `event.stop()` 只阻止剩余最终结果处理器，无法撤回已经发送的消息，也不会跳过工作流的上下文写入。
 
 ### 生命周期事件
 

@@ -22,14 +22,14 @@ Bot Token、App Secret、WebSocket Token，以及 BiliBili Cookie 等均属于�
 | QQ 官方机器人 | 通过 QQ 机器人开放平台接入群聊和好友私聊。 | AppID 与 AppSecret；也可将两项同时留空，启用后通过手机 QQ 扫码绑定。可选沙箱模式与访问列表。 |
 | Telegram | 通过 Telegram 官方 Bot 接收和发送私聊、群聊消息。 | Bot 用户名、由 `@BotFather` 创建的 Bot Token，以及群组/用户访问列表。详见 [Telegram 适配器](./telegram)。 |
 | Discord | 通过 Discord Bot 接入频道和私信。 | Discord Developer Portal 的 Bot Token、Gateway Intents、可选 HTTP 代理、频道/用户访问列表；可配置斜杠命令同步范围。 |
-| BiliBili | 监听指定 B 站视频的评论。 | 机器人 UID、要监听的视频 BVID、轮询与消息处理间隔，以及从浏览器 Cookie 或 LocalStorage 获取的登录字段。详见 [BiliBili 适配器](./bilibili)。 |
+| BiliBili | 接收私信、监听回复与 @ 评论，并提供动态浏览、搜索和发布能力。 | 扫码登录或手动填写登录字段；可分别控制私信、私信访问规则与评论通知。账号评论通知无需 BVID，视频评论轮询仍可作为回退方式。详见 [BiliBili 适配器](./bilibili)。 |
 | 个人微信 | 通过 OpenClaw API 接入个人微信私聊。 | 默认 API 与 CDN 地址通常无需修改；保存并启用后，按日志中的二维码链接扫码绑定。此适配器不支持群聊。详见 [微信适配器](./wechat)。 |
 
 适配器下拉列表还会显示由已启用插件注册的平台类型。它们的字段和登录方式由插件决定，请以插件说明为准。
 
 ## 访问规则
 
-QQ、QQ 官方机器人、Telegram、Discord 和个人微信适配器都提供访问控制；不同平台可用的群组、频道或用户字段略有不同。
+QQ、QQ 官方机器人、Telegram、Discord、BiliBili 私信和个人微信适配器都提供访问控制；不同平台可用的群组、频道或用户字段略有不同。
 
 - **白名单（allow list）**：仅响应列表中的用户、群组或频道。
 - **黑名单（deny list）**：忽略列表中的用户、群组或频道。

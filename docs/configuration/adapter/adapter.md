@@ -22,14 +22,14 @@ Bot tokens, App Secrets, WebSocket tokens, and BiliBili cookies are sensitive cr
 | QQ Official Bot | Connects group chats and friend DMs through the QQ Bot Open Platform. | AppID and AppSecret; alternatively, leave both empty and bind the bot by scanning a QR code in the QQ mobile app after enabling the adapter. Sandbox mode and access lists are available. |
 | Telegram | Receives and sends private and group messages through an official Telegram bot. | Bot username, the Bot Token created by `@BotFather`, and group/user access lists. See [Telegram Adapter](./telegram). |
 | Discord | Connects Discord channels and DMs through a Discord bot. | Bot Token from the Discord Developer Portal, Gateway Intents, an optional HTTP proxy, and channel/user access lists. You can also scope slash-command synchronization. |
-| BiliBili | Listens for comments on a specified BiliBili video. | Bot UID, the video BVID to watch, polling and message-processing intervals, and login values from browser cookies or LocalStorage. See [BiliBili Adapter](./bilibili). |
+| BiliBili | Receives DMs and reply/mention comment notifications, and provides feed browsing, search, and publishing. | QR login or manual credentials; separate DM, DM access-control, and comment-notification settings. Account notifications need no BVID; video-comment polling remains a fallback. See [BiliBili Adapter](./bilibili). |
 | Personal WeChat | Connects Personal WeChat DMs through the OpenClaw API. | The default API and CDN URLs normally need no changes. After saving and enabling, scan the QR-code URL from the logs to bind the account. This adapter does not support group chats. See [WeChat Adapter](./wechat). |
 
 The platform selector also shows adapter types registered by enabled plugins. Their fields and sign-in flow are defined by the plugin; follow that plugin's documentation.
 
 ## Access control
 
-QQ, QQ Official Bot, Telegram, Discord, and Personal WeChat adapters provide access control. The available group, channel, and user fields vary by platform.
+QQ, QQ Official Bot, Telegram, Discord, BiliBili DMs, and Personal WeChat adapters provide access control. The available group, channel, and user fields vary by platform.
 
 - **Allow list**: Respond only to the users, groups, or channels in the list.
 - **Deny list**: Ignore the users, groups, or channels in the list.

@@ -15,8 +15,8 @@ Keep the defaults at first. Change them only when actual conversations show that
 
 | Setting | Default | How to configure it |
 | --- | --- | --- |
-| Max Context Length | 10 messages | Limits the messages retained for each session. A larger value preserves more context but increases model input, latency, and cost; a smaller value lowers overhead. |
-| Overflow Discard Count | 1 message | The number of oldest messages removed whenever the context exceeds its limit. Keep 1 in most cases; raise it modestly when a large context limit needs to free space faster. |
+| Max Context Length | 10 context chunks | Limits the context chunks retained for each session; one turn can contain multiple user, assistant, and tool messages. A larger value preserves more context but increases model input, latency, and cost; a smaller value lowers overhead. |
+| Overflow Discard Count | 1 context chunk | Discards the oldest context chunks when the limit is exceeded; a larger overflow is first reduced to the limit. Keep 1 in most cases; raise it modestly when a large context limit needs to free space faster. |
 | Message Merge Interval | 2 seconds | The wait after a message arrives; later messages within the window are processed together. Use a shorter value for faster responses, or a longer value when users often send several fragments in succession. |
 | Max Buffer Messages | 5 messages | The maximum messages that may accumulate before a batch is processed. Reaching the limit triggers processing promptly instead of waiting indefinitely. |
 | Min/Max Message Delay | 2 / 5 seconds | The random delay range between consecutive outgoing reply messages. Lower it for faster delivery; never set the maximum below the minimum. |

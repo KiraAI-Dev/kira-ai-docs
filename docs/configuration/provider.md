@@ -47,6 +47,18 @@ After creating a provider, select its capability group and choose **Add Model**.
 
 `extra_body` must be a JSON object. It is for endpoint-specific request fields, such as a provider's search option, and should only be used when the selected model documents that field.
 
+## Model names and internal IDs
+
+When adding a model, enter the **upstream model name / ID** expected by the provider API, such as `gpt-4o`. KiraAI separately generates a stable internal model ID. Default-model and plugin selections store `provider_id:internal_model_id` references.
+
+Editing the upstream name in WebUI preserves existing selections. Do not construct or manually rewrite internal references from display names. See [Provider Development](../development/providers#v3-model-identity-and-provider-status) for developer APIs and migration.
+
+## Enabling and disabling
+
+The provider switch lets you temporarily disable a service while retaining credentials and model configuration. Default models and plugin calls relying on a disabled provider become unavailable; select an available model or re-enable the provider. Enabling restores its runtime instance.
+
+Disabling blocks new calls, including calls through previously cached plugin clients. It does not undo requests already sent upstream.
+
 ## Test and troubleshoot
 
 Use the model health-check action after saving a model. It sends a small test request and reports latency for **LLM**, **TTS**, **embedding**, and **rerank** models. Health checks are not currently provided for STT, image-generation, or video-generation models.

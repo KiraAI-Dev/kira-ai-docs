@@ -115,6 +115,46 @@ class OpenAIProvider(BaseProvider):
 
 提供商类在 KiraAI 启动时被自动加载，KiraAI 会根据提供商清单文件中的配置和模型类型，加载对应的模型客户端类。并且在 WebUI 提供可视化的配置界面。
 
+## v3 模型身份与启停
+
+`ModelInfo.model_id` 是稳定的内部标识，`ModelInfo.model_name` 才是发送给上游 API 的模型名称。自定义客户端构造请求时应使用 `self.model.model_name`；不能把内部 ID 当作上游 `model` 参数。
+
+配置采用 `model_config_version = 2`：
+
+```json
+{
+  "model_config_version": 2,
+  "model_config": {
+    "llm": {
+      "<internal_id>": {
+        "model_name": "upstream-model-name",
+        "config": {"temperature": 0.7}
+      }
+    }
+  }
+}
+```
+
+模型选择引用仍为 `provider_id:model_id`，但冒号后是内部 ID。修改上游名称不会更换内部身份。同一提供商、同一模型类型内，上游名称必须非空且唯一。
+
+| 管理器接口 | 当前语义 |
+| --- | --- |
+| `register_model(provider_id, model_type, model_name, config=None)` | 返回生成的内部 ID；提供商不存在时返回 `None` |
+| `get_models(provider_id)` | 按类型及内部 ID 返回 `{model_name, config}` |
+| `get_model_info(..., model_type=None)` / `get_model_client(..., model_type=None)` | 使用内部 ID 或无歧义旧别名；可指定模型类型 |
+| `update_model(..., config=None, model_name=None)` | 可更名并保留内部 ID；传入的配置整体替换模型参数 |
+| `sync_models(..., add_ids, delete_ids, config=None)` | 两个列表仍传上游名称，虽然字段名包含 `ids` |
+
+提供商配置的 `status` 为 `active` 或 `inactive`，旧配置缺失时按 `active` 处理。停用会保留配置并移除运行实例，通过管理器获取的客户端在每次新的异步调用前也会检查状态，包括已缓存的客户端。停用时抛出 `ProviderAPIError`，但不会撤回已经发出的上游请求。
+
+### 兼容与迁移边界
+
+旧模型配置迁移前会生成 `.model-identity-v1.bak` 备份，再转换条目和模型引用。旧名称保留为 `legacy_ids`，仅能无歧义解析时使用；新建模型不要假定存在旧名称别名。创建模型 REST 请求仍接受旧 `model_id` 字段作为 `model_name` 的输入别名。
+
+直接构造 `ModelInfo` 未提供 `model_name` 时，会暂用 `model_id` 作为上游名称，以兼容旧集成。新 Provider 应明确使用新字段，不能依赖该回退来推断所有模型的上游名称。
+
+OpenAI 兼容客户端的实现位置为 `core.provider.openai_compatible`；不要再依赖旧 `core.utils` 下的实现路径。
+
 ## 模型客户端
 
 :::warning
