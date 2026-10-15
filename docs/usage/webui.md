@@ -33,7 +33,7 @@ Use the **Logs** page to confirm that the provider and adapter connect successfu
 | **Providers** | Add providers, configure models, and run supported model health checks. |
 | **Adapters** | Configure and enable connections to chat platforms. |
 | **Personas** | Create and manage the personas used by conversations. |
-| **WebChat** | Talk directly with Kira using text, images, and files. |
+| **WebChat** | Talk directly with your AI digital life using text, images, and files. |
 | **Stickers** | Manage the local sticker library. |
 | **Configuration** | Set system-wide options, including model defaults and network-related settings. |
 | **Add-ons** | Manage installed plugins, the plugin store, MCP servers, Skills, and their session scope. |
@@ -45,7 +45,7 @@ The language selector at the bottom of the sidebar switches the WebUI language b
 
 ## WebChat
 
-Use **WebChat** to talk directly with Kira without connecting an external chat platform. Before the first message, set your nickname, the peer nickname, and the chat description, and configure a default LLM and persona.
+Use **WebChat** to talk directly with your AI digital life without connecting an external chat platform. Before the first message, set your nickname, the peer nickname, and the chat description, and configure a default LLM and persona.
 
 It supports text, images, and files. Replies use the existing plugins, Agent, and delivery pipeline. Each input permits up to 16000 characters and 10 attachments, with a combined attachment size of 20 MiB.
 
