@@ -27,7 +27,7 @@ from core.plugin import on, Priority
 | `@on.tool_result()`      | 工具调用返回结果后                 | `(self, event: KiraMessageBatchEvent, result: ToolResult, *args, **kwargs)` |
 | `@on.message_sent()`     | 单条消息发送到 IM 平台后           | `(self, event: KiraMessageBatchEvent, action: MessageChain, result: KiraIMSentResult, *args, **kwargs)` |
 | `@on.step_result()`      | Agent 每步结束后                   | `(self, event: KiraMessageBatchEvent, step_result: KiraStepResult, *args, **kwargs)` |
-| `@on.final_result()`     | 最终消息结果生成后                 | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)`                    |
+| `@on.final_result()`     | Agent 本轮执行结束后、上下文保存前；`result.step_results` 汇总本轮各步结果                 | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)`                    |
 
 ### 评论事件
 
@@ -59,10 +59,6 @@ class MyCommentPlugin(BasePlugin):
 ```
 
 这是 Hook 片段，插件还需实现生命周期方法。确定接管评论后，在首次外部 `await` 前调用 `event.stop()`，避免后续插件重复回复。示例的固定文字用于展示路由；实际交互内容应按插件需求交给模型生成。内置默认评论插件以 `SYS_LOW` 处理尚未被接管的评论，用户插件应使用普通优先级。
-
-### 最终结果事件
-
-`@on.final_result()` 已实际启用，在一轮 Agent 执行结束后触发，接收 `KiraFinalResult`（从 `core.chat.message_utils` 导入），其 `step_results` 汇总本轮各步结果。它位于上下文持久化之前；此处 `event.stop()` 只阻止剩余最终结果处理器，无法撤回已经发送的消息，也不会跳过工作流的上下文写入。
 
 ### 生命周期事件
 
