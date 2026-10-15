@@ -10,7 +10,7 @@ self.ctx.adapter_mgr      # AdapterManager：适配器管理
 self.ctx.persona_mgr      # PersonaManager：人格管理
 self.ctx.provider_mgr     # ProviderManager：模型提供商管理
 self.ctx.tool_mgr         # FuncToolManager：函数工具管理
-self.ctx.sticker_mgr      # StickerManager: sticker management
+self.ctx.sticker_mgr      # StickerManager：贴纸管理
 ```
 
 还可以使用 `self.ctx.prompt_mgr`、`skills_mgr`、`mcp_mgr`、`message_history`、`image_desc_cache`、`session_buffer_mgr` 和 `message_delivery` 等注入服务；MCP 管理器可能为 `None`。
@@ -175,7 +175,7 @@ data/plugins/my_plugin/
 │   └── icon.svg          # 可选的 manifest 图标
 └── adapter/
     ├── manifest.json
-    ├── adapter.py        # Or __init__.py; defines a BaseAdapter subclass
+    ├── adapter.py        # 也可使用 __init__.py；定义 BaseAdapter 子类
     ├── schema.json       # 可选
     └── icon.svg          # 可选的 manifest 图标
 ```

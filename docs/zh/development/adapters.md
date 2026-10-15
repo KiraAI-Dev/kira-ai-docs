@@ -50,7 +50,7 @@ async def send_group_message(self, group_id, message) -> KiraIMSentResult | None
 
 构造 `KiraMessageEvent` 或 `KiraMessageBatchEvent` 时，使用 `supported_elements`，通常取自 `await im.get_message_metadata()`。事件仍接受弃用的 `message_types=` 和读写别名，但旧关键字不能与新关键字或位置参数混用；适配器的旧 `message_types` 属性也仅为过渡保留。这些兼容入口不会恢复已删除的旧基类。
 
-插件主动发送优先使用 `await self.ctx.send_message_chain(sid, chain)`，以经过统一投递和历史存档流程。直接调用能力发送接口适用于明确需要平台操作的场景。
+插件主动发送优先使用 `await self.ctx.send_message_chain(sid, chain)`，以便通过统一投递和历史存档流程发送消息。直接调用能力发送接口适用于明确需要平台操作的场景。
 
 ## 访问控制
 
