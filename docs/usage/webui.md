@@ -33,14 +33,39 @@ Use the **Logs** page to confirm that the provider and adapter connect successfu
 | **Providers** | Add providers, configure models, and run supported model health checks. |
 | **Adapters** | Configure and enable connections to chat platforms. |
 | **Personas** | Create and manage the personas used by conversations. |
+| **WebChat** | Talk directly with your AI digital life using text, images, and files. |
 | **Stickers** | Manage the local sticker library. |
 | **Configuration** | Set system-wide options, including model defaults and network-related settings. |
 | **Add-ons** | Manage installed plugins, the plugin store, MCP servers, Skills, and their session scope. |
-| **Sessions** | Inspect and manage conversation sessions. |
+| **Sessions** | Inspect message history and LLM context, and manage session details and capability overrides. |
 | **Logs** | Review runtime output and diagnose connection or configuration errors. |
 | **Settings** | Manage WebUI settings and instance data operations exposed by the application. |
 
 The language selector at the bottom of the sidebar switches the WebUI language between English and Chinese. Plugin pages may also provide their own localized labels.
+
+## WebChat
+
+Use **WebChat** to talk directly with your AI digital life without connecting an external chat platform. Before the first message, set your nickname, the peer nickname, and the chat description, and configure a default LLM and persona.
+
+It supports text, images, and files. Replies use the existing plugins, Agent, and delivery pipeline. Each input permits up to 16000 characters and 10 attachments, with a combined attachment size of 20 MiB.
+
+Chat settings control file tools and command execution separately. File tools are enabled by default, while command execution is disabled. Enable permissions as needed. Successful submission means the input was accepted; the model reply appears later in the message list.
+
+The application-owned `webchat` adapter provides this feature using SID `webchat:dm:admin`. Do not create an ordinary adapter instance with the same name. Display records live in `data/webchat/webchat.db` and media in `data/webchat/media/`.
+
+**Delete chat history** removes only WebChat's own archive and media. Chat settings and the session's LLM context remain. To reset model context, clear it separately in Sessions.
+
+## Session history and LLM context
+
+Session details separate **Message History** from **LLM Context**. History shows actual structured incoming and outgoing messages, media, and replies; context shows the chunks sent to the model.
+
+They have independent retention. Trimming or clearing context does not delete chat history. Context counts in session lists refer to chunks; history counts refer to archive records. See [Memory Settings](../configuration/memory) for age and count limits.
+
+## Persona reference images and scenario rules
+
+Personas can define global, private-chat, and group-chat rules. Prompt construction combines global rules with the current scenario's rules. Each persona can also manage its own selfie reference image; switching personas selects the corresponding image.
+
+Keep general behavior rules in the persona. The default chat plugin's group-chat prompt can still supply additional group environment instructions.
 
 ## Safe operation
 

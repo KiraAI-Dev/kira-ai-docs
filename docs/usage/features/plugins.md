@@ -40,15 +40,16 @@ Plugins can define a configuration schema (`schema.json`) with 15+ field types, 
 
 KiraAI ships with several builtin plugins:
 
-| Plugin          | Description                                      |
-| --------------- | ------------------------------------------------ |
-| `chat`          | Core message routing, buffering, and strategy    |
-| `kira-ai`       | XML tag injection and LLM response auto-repair   |
-| `memory`        | Long-term memory management for the AI           |
-| `sticker`       | Sticker/emoji support in conversations           |
-| `search`        | Web search capability for the LLM                |
-| `file`          | File operations (read, write, list)              |
-| `session_tools` | Cross-session awareness and management           |
+| Plugin ID | Description |
+| --- | --- |
+| `default-chat` | IM message buffering and processing strategies |
+| `default-comment` | Generates replies to comments not claimed by another plugin |
+| `kira-ai` | XML tag injection and LLM response auto-repair |
+| `kira_plugin_simple_memory` | Simple long-term memory management |
+| `default-sticker` | Sticker support in conversations |
+| `search` | Web search tools for the LLM |
+| `agent` | File access, search, and command execution; replaces the old `file` plugin |
+| `kira_session_plugin` | Cross-session awareness and management |
 
 ## Install and manage plugins
 

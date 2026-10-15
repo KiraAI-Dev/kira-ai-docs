@@ -10,8 +10,12 @@ self.ctx.adapter_mgr      # AdapterManager: adapter management
 self.ctx.persona_mgr      # PersonaManager: persona management
 self.ctx.provider_mgr     # ProviderManager: model provider management
 self.ctx.tool_mgr         # FuncToolManager: function tool management
-self.ctx.sticker_manager  # StickerManager: sticker management
+self.ctx.sticker_mgr      # StickerManager: sticker management
 ```
+
+Additional injected services include `self.ctx.prompt_mgr`, `skills_mgr`, `mcp_mgr`, `message_history`, `image_desc_cache`, `session_buffer_mgr`, and `message_delivery`. The MCP manager may be `None`.
+
+`sticker_mgr` is the canonical name. `sticker_manager` remains a read-only attribute alias; it is not a constructor keyword or assignment target. KiraAI creates runtime contexts; tests constructing one themselves must provide the added required services.
 
 ## Get Plugin Data Directory
 
@@ -31,8 +35,12 @@ llm = self.ctx.get_default_llm_client()
 fast_llm = self.ctx.get_default_fast_llm_client()
 
 # Use a specific model (provider_id:model_id format)
-llm = self.ctx.get_llm_client(model_uuid="openai:gpt-4o")
+llm = self.ctx.get_llm_client(model_uuid=f"{provider_id}:{model_id}")
 ```
+
+Use the actual `provider_id` and `model_id` from a configured model reference. `model_id` is a stable internal ID, while `ModelInfo.model_name` is the upstream request name. An old name resolves only if migration retained it as an unambiguous `legacy_ids` alias; do not construct references from display names.
+
+Disabling a provider prevents new calls through clients obtained from its manager, including previously cached clients. Handle missing default models and unavailable providers when obtaining clients.
 
 ## Get Embedding Client
 
@@ -52,6 +60,74 @@ other_plugin = self.ctx.get_plugin_inst("other_plugin_id")
 buffer = self.ctx.get_buffer(session_id)
 await self.ctx.flush_session_messages(session_id)
 ```
+
+Publish only matching buffered messages when needed:
+
+```python
+published = await self.ctx.flush_session_messages(
+    session_id,
+    filter_fn=lambda event: not event.is_notice,
+)
+```
+
+`filter_fn` is a synchronous predicate receiving a `KiraMessageEvent`. Unmatched events stay buffered. `True` means a batch was published; `False` means no messages matched. Publication does not mean the Agent has finished, and errors propagate.
+
+## Session access and capability overrides
+
+Since v3.0.0-rc.1, session reads, writes, and capability queries are asynchronous. Reads return independent `Session` snapshots; editing a snapshot does not persist it automatically.
+
+```python
+sessions = await self.ctx.session_mgr.get_sessions(include_content=False)
+session = await self.ctx.session_mgr.get_session(session_id, ensure_session=True)
+chunks = session.content
+flat_messages = session.flatten_content()
+await self.ctx.session_mgr.update_session(session_id, title="Updated title")
+await self.ctx.session_mgr.update_session(session_id, content=chunks)
+capabilities = await self.ctx.get_session_capabilities(session_id)
+```
+
+Ordinary `get_session(session_id)` does not create a session and returns `None` when missing. `include_content=False` skips loading the body, rather than indicating an empty context; do not write that snapshot's empty `content` back. Context has the shape `list[list[dict]]`.
+
+| Old API or behavior | Current usage |
+| --- | --- |
+| `get_session_info()` | `await get_sessions(include_content=False)` |
+| `get_session_info(sid)` | `await get_session(sid)` |
+| `read_memory(sid)` / `fetch_memory(sid)` | Read `content` / call `flatten_content()` on a session snapshot |
+| `update_session_info(sid, ...)` | `await update_session(sid, title=..., description=...)` |
+| `write_memory(sid, chunks)` | `await update_session(sid, content=chunks)` |
+| `update_memory(sid, chunk)` | Await the same method to append a turn and trim context |
+| `get_memory_count(sid)` | `len(session.content)`; use `await get_session_message_counts()` for bulk counts |
+| `delete_session(sid)` | Await the same method |
+| Editing `chat_memory` / calling `_save_memory()` | Use session APIs; the old cache and synchronous save entry points are removed |
+
+`update_session()` accepts `title`, `description`, `content`, and `data`. Omitted fields remain unchanged. `content` and `data` replace entire values rather than merging them.
+
+Use `await self.ctx.session_mgr.update_session_capabilities(session_id, overrides)` for capability overrides; `None` restores global defaults. `get_effective_capabilities()` must also be awaited; plugins can normally use `ctx.get_session_capabilities()` as above.
+
+`Session.sid` remains the routing key `adapter_name:dm|gm:target_id`. The new `internal_id` is a database identity and cannot replace the SID. See [Memory Settings](../../configuration/memory) for upgrade and storage behavior.
+
+## Structured message history
+
+`message_history` queries locally archived incoming and outgoing messages. It neither fetches messages from the platform nor represents LLM context.
+
+```python
+page = await self.ctx.message_history.list_messages(session_id, limit=50)
+for record in page.messages:
+    chain = record.chain
+    linked_memory = await self.ctx.message_history.get_linked_memory(record)
+    archive_json = record.to_dict()
+next_cursor = page.next_cursor
+```
+
+The current stable release returns `MessageHistoryPage`, whose `messages` contains `MessageHistoryRecord` objects with a `MessageChain` in `chain`. Call `record.to_dict()` or `page.to_dict()` for JSON-safe archive snapshots; do not treat the Python return objects as dictionaries.
+
+- `get_message(internal_message_id=...)`: retrieves one internal history ID, returning `None` when absent. You can combine `session_id`, `platform_message_id`, `self_id`, and `direction` filters; scope platform IDs to a session.
+- `get_messages(...)`: paginates using the same filters; at least one filter is required.
+- `list_messages(session_id, cursor=..., limit=...)`: returns records newest first by archive time and internal ID. `limit` is 1–200; continue with the same filters and `next_cursor`.
+- `get_messages_by_llm_message_id(session_id, llm_message_id, ...)`: finds archives linked to a context message.
+- `get_linked_memory(record)`: returns a retained linked context entry, or `None` when context was trimmed or no link exists.
+
+Use `await self.ctx.send_message_chain(session_id, chain)` for unified delivery and history handling. The result's `history_id` is the internal archive ID, while `message_id` is the platform ID. Context uses `_extra.llm_message_id` for linking; these identities are not interchangeable.
 
 ## Data Storage
 
@@ -99,7 +175,7 @@ data/plugins/my_plugin/
 │   └── icon.svg          # Optional manifest icon
 └── adapter/
     ├── manifest.json
-    ├── adapter.py        # Or __init__.py; defines an IMAdapter or SocialMediaAdapter subclass
+    ├── adapter.py        # Or __init__.py; defines a BaseAdapter subclass
     ├── schema.json       # Optional
     └── icon.svg          # Optional manifest icon
 ```
@@ -113,7 +189,7 @@ class MyPlugin(BasePlugin):
         await self.ctx.register_adapter("adapter")
 ```
 
-Each component directory must contain a `manifest.json` with a non-empty `name`. The name becomes the Provider format or Adapter platform and must not collide with another registered type. `provider.py` must define a `BaseProvider` subclass; `adapter.py` must define an `IMAdapter` or `SocialMediaAdapter` subclass. Only classes defined by that component module are selected.
+Each component directory must contain a `manifest.json` with a non-empty `name`. The name becomes the Provider format or Adapter platform and must not collide with another registered type. `provider.py` must define a `BaseProvider` subclass; `adapter.py` must define a `BaseAdapter` subclass. Only classes defined by that component module are selected.
 
 Provider and Adapter manifests use the same optional `icon` and `icon-dark` fields as built-in components. Paths are relative to the component's `manifest.json`, must remain inside that component directory, and are displayed by the WebUI when the type is available.
 
