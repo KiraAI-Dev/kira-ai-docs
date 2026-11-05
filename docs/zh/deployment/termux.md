@@ -116,7 +116,7 @@ git clone https://github.com/xxynet/KiraAI.git
 就表示网络连接失败开梯子去吧
 
 ### 5.返回Kiraai文件
-### 6.安装 pyenv 的编译依赖
+### 6安装Python编译依赖
 ```bash
 apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils \
@@ -176,14 +176,10 @@ source venv/bin/activate
 
 # 4.安装项目依赖
 pip install -r requirements.txt
-python main.py
 
-# 5.赋予运行权限
+# 5.赋予运行权限并运行 KiraAI
 cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh
 
-# 6.运行 KiraAI
-cd scripts
-./run.sh
 ```
 #### 看到正常输出日志即表示启动成功
 
