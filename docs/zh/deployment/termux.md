@@ -6,10 +6,13 @@
 
 本指南将帮助您在Termux上部署KiraAI。
 
-## 一.前置准备
-### 1. 安装 Termux 
+## 一. 前置准备
+
+### 1. 安装 Termux
+
 https://github.com/termux/termux-app
 下载安装v0.118.3 或更高版本。
+
 ### 2. 基础环境配置 打开 Termux，执行以下命令进行初始设置。
 
    ```bash
@@ -26,6 +29,7 @@ https://github.com/termux/termux-app
    proot-distro login debian
    
    ```
+
 ### 3. 更换 Debian 软件源（有手动选择操作）
 
    ```bash
@@ -37,16 +41,19 @@ https://github.com/termux/termux-app
    apt install -y sudo curl libgcrypt20
    # 安装必要的sudo、curl、libgcrypt20系统工具包
    ```
-### 4.开防杀后台：
+
+### 4. 开防杀后台：
+
 Acquire wakelock（获取唤醒锁）选无限制，
 后续显示wake lock held（保持唤醒锁定状态）
 
-### 5.退出 Debian 环境，返回 Termux 原生环境
+### 5. 退出 Debian 环境，返回 Termux 原生环境
 
    ```bash
    exit
    ```
-### 6.在原生环境中添加快捷命令“deb”用于快捷启动 Debian 环境
+
+### 6. 在原生环境中添加快捷命令“deb”用于快捷启动 Debian 环境
 
    ```bash
    # 1. 添加快捷命令deb，方便下次一键进入 Debian 环境
@@ -58,7 +65,7 @@ Acquire wakelock（获取唤醒锁）选无限制，
 
    ```
 
-## 二.安装 NapCat
+## 二. 安装 NapCat
 
 在 Debian 环境中进行安装：
 
@@ -67,11 +74,13 @@ Acquire wakelock（获取唤醒锁）选无限制，
 ```bash
 deb
 ```
+
 ### 2. 下载安装NapCat
 
 ```bash
 curl -O https://raw.githubusercontent.com/NapNeko/NapCat-Installer/refs/heads/main/script/install.sh
 ```
+
 ### 3. 给予权限并运行
 
 ```bash
@@ -92,13 +101,14 @@ source ~/.bashrc
 ```bash
 xvfb-run -a /root/Napcat/opt/QQ/qq --no-sandbox
 ```
-#### 看到正常输出日志即表示启动成功
-#### 详细登录配置流程请参考 NapCat 官方文档
+看到正常输出日志即表示启动成功，详细登录配置流程请参考 NapCat 官方文档
 
 
-## 三.安装 KiraAI 
-### 1.确保在proot环境中，显示为“root@localhost:~#”
-### 2.安装github
+## 三. 安装 KiraAI
+
+### 1. 确保在proot环境中，显示为“root@localhost:~#”
+
+### 2. 安装 Git
 
 ```bash
 apt update && apt install -y git
@@ -107,44 +117,50 @@ git --version
 # 2.验证是否成功(显示 git version x.x.x 这样的信息， 就说明安装成功了）
 ```
 
-### 3.选个位置放Kiraai
+### 3. 选个位置放 KiraAI
 
 ```bash
 cd /root
 ```
-### 4.克隆 KiraAI 仓库
+
+### 4. 克隆 KiraAI 仓库
+
 ```bash
 git clone https://github.com/KiraAI-Dev/KiraAI.git
 ```
 如果显示报错信息fatal:unable to access... Recv_failure: Software caused connection abort
 就表示网络连接失败开梯子去吧
 
-### 5.返回Kiraai文件
-### 6.安装 pyenv 的编译依赖
+### 5. 返回 KiraAI 文件
+
+### 6. 安装Python编译依赖
+
 ```bash
 apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils \
 tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```
 
-### 7.下载 Python 源码（使用阿里云镜像）
+### 7. 下载 Python 源码（使用阿里云镜像）
 
 ```bash
 wget https://mirrors.aliyun.com/python-release/source/Python-3.11.11.tgz
 ```
-### 8.下载完成后，确认文件是否存在
+
+### 8. 下载完成后，确认文件是否存在
 
 ```bash
 ls -la Python-3.11.11.tgz
 ```
 
-### 9.解压
+### 9. 解压
 
 ```bash
 tar -xzf Python-3.11.11.tgz
 ```
 
-### 10.编译 python
+### 10. 编译 python
+
 ```bash
 # 1. 回到源码目录
 cd /root/Python-3.11.11
@@ -166,28 +182,30 @@ ls -l /usr/local/bin/python3.11
 /usr/local/bin/python3.11 --version
 ```
 
-### 11.启动 KiraAI
+### 11. 启动 KiraAI
 
 ```bash
 # 1.进入项目目录
 cd /root/KiraAI
 
 # 2.创建并配置 Python 虚拟环境
-python3.11 -m venv .venv
+python3.11 -m venv venv
 
 # 3.激活虚拟环境
-source .venv/bin/activate
+source venv/bin/activate
 
 # 4.安装项目依赖
 pip install -r requirements.txt
 
-# 5.运行 KiraAI
-cd scripts
-./run.sh
+# 5.赋予运行权限并运行 KiraAI
+cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh
+
 ```
+
 #### 看到正常输出日志即表示启动成功
 
-## 四.添加全局快捷启动命令
+## 四. 添加全局快捷启动命令
+
 #### 为了在 Termux 原生环境中能一键启动 NapCat 和 KiraAI，可以添加以下快捷命令：
 
 ```bash
@@ -198,8 +216,8 @@ echo "alias NC='proot-distro login debian -- bash -c \"xvfb-run -a /root/Napcat/
 echo "echo '输入 NC 启动 NapCat (自动进入Debian并运行NapCat)'" >> ~/.bashrc
 
 # 2. 一键启动 KiraAI 的命令
-echo "alias kira-ai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source .venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
-echo "echo ' 输入 kira-ai 一键启动 KiraAI (自动进入 Debian 并激活 .venv 环境'" >> ~/.bashrc
+echo "alias kira-ai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
+echo "echo ' 输入 kira-ai 一键启动 KiraAI (自动进入 Debian 并激活 venv 环境'" >> ~/.bashrc
 
 # 3. 重新加载配置
 source ~/.bashrc
@@ -210,7 +228,7 @@ source ~/.bashrc
 1. 启动 NapCat：在 Termux 中输入 NC 并按回车。
 2. 启动 KiraAI：新建一个 Termux 会话，输入 kira-ai 并按回车。
 
-## 访问KiraAI
+## 访问 KiraAI
 
 部署完成后，您可以通过以下地址访问KiraAI的Web管理界面：
 http://localhost:5267
@@ -224,9 +242,12 @@ http://localhost:5267
 ## 故障排查
 
 - 检查Python版本是否符合要求：`python --version`
-- 确保虚拟环境已正确激活：`venv\Scripts\activate`
+- 确保虚拟环境已正确激活：`source venv/bin/activate`
+- 偶尔更新时启动KiraAI遇到缺少运行权限提示 `bash: ./run.sh: Permission denied` 重新进入虚拟环境赋予运行权限：`cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh`
+- 在Termux原生环境从网络时间服务器同步时间：`pkg install ntpdate && ntpdate pool.ntp.org`  验证时间校正是否成功：`date` 输出格式类似：`Thu Nov  5 14:42:42 CST 2026`
 - 查看项目日志以定位错误
   
 ## 常见问题
+
 - 如果显示报错信息fatal:unable to access... Recv_failure: Software caused connection abort
 就表示网络连接失败开梯子
