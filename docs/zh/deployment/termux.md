@@ -222,7 +222,7 @@ http://localhost:5267
 - 检查Python版本是否符合要求：`python --version`
 - 确保虚拟环境已正确激活：`venv\Scripts\activate`
 - 偶尔更新时启动KiraAI遇到缺少运行权限提示 `bash: ./run.sh: Permission denied` 重新进入虚拟环境赋予运行权限：`cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh`
-- 从网络时间服务器同步时间：`pkg install ntpdate && ntpdate pool.ntp.org` 验证时间校正是否成功：`date` 输出格式类似：`Thu Nov  5 14:42:42 CST 2026`
+- 在Termux原生环境从网络时间服务器同步时间：`pkg install ntpdate && ntpdate pool.ntp.org`  验证时间校正是否成功：`date` 输出格式类似：`Thu Nov  5 14:42:42 CST 2026`
 - 查看项目日志以定位错误
   
 ## 常见问题
