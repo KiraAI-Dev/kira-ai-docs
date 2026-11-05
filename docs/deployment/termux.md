@@ -7,9 +7,12 @@ This deployment guide was contributed by the community
 This guide will help you deploy KiraAI on Termux.
 
 ## Part 1: Prerequisites
+
 ### 1. Install Termux
+
 https://github.com/termux/termux-app
 Download and install v0.118.3 or higher.
+
 ### 2. Basic Environment Setup — Open Termux and run the following commands for initial setup.
 
    ```bash
@@ -26,7 +29,8 @@ Download and install v0.118.3 or higher.
    proot-distro login debian
 
    ```
-### 3. Switch Debian Mirror Source If Needed (requires manual selection)
+
+### 3. Switch Debian Mirror Source (requires manual selection)
 
    ```bash
    bash <(curl -sSL https://linuxmirrors.cn/main.sh)
@@ -37,7 +41,9 @@ Download and install v0.118.3 or higher.
    apt install -y sudo curl libgcrypt20
    # Install required system packages: sudo, curl, libgcrypt20
    ```
+
 ### 4. Disable Background Kill:
+
 Acquire wakelock — select "No restrictions",
 then confirm "wake lock held" is shown.
 
@@ -46,6 +52,7 @@ then confirm "wake lock held" is shown.
    ```bash
    exit
    ```
+
 ### 6. Add shortcut command "deb" in the native environment for quick Debian access
 
    ```bash
@@ -67,11 +74,13 @@ Perform the installation inside the Debian environment:
 ```bash
 deb
 ```
+
 ### 2. Download and Install NapCat
 
 ```bash
 curl -O https://raw.githubusercontent.com/NapNeko/NapCat-Installer/refs/heads/main/script/install.sh
 ```
+
 ### 3. Grant Permission and Run
 
 ```bash
@@ -92,12 +101,14 @@ source ~/.bashrc
 ```bash
 xvfb-run -a /root/Napcat/opt/QQ/qq --no-sandbox
 ```
-#### Normal log output indicates a successful start.
-#### For detailed login configuration, refer to the official NapCat documentation.
+
+Normal log output indicates a successful start. For detailed login configuration, refer to the official NapCat documentation.
 
 
 ## Part 3: Install KiraAI
+
 ### 1. Ensure you are in the proot environment — the prompt should show "root@localhost:~#"
+
 ### 2. Install Git
 
 ```bash
@@ -112,7 +123,9 @@ git --version
 ```bash
 cd /root
 ```
+
 ### 4. Clone the KiraAI Repository
+
 ```bash
 git clone https://github.com/KiraAI-Dev/KiraAI.git
 ```
@@ -120,7 +133,9 @@ If you see the error: `fatal: unable to access... Recv_failure: Software caused 
 it means the network connection failed — use a VPN/proxy.
 
 ### 5. Navigate into the KiraAI directory
-### 6. Install pyenv compilation dependencies
+
+### 6. Install Python compilation dependencies
+
 ```bash
 apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils \
@@ -132,6 +147,7 @@ tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```bash
 wget https://mirrors.aliyun.com/python-release/source/Python-3.11.11.tgz
 ```
+
 ### 8. Confirm the file exists after download
 
 ```bash
@@ -145,6 +161,7 @@ tar -xzf Python-3.11.11.tgz
 ```
 
 ### 10. Compile Python
+
 ```bash
 # 1. Enter the source directory
 cd /root/Python-3.11.11
@@ -181,13 +198,14 @@ source venv/bin/activate
 # 4. Install project dependencies
 pip install -r requirements.txt
 
-# 5. Run KiraAI
-cd scripts
-./run.sh
+# 5. Grant execution permission and run KiraAI
+cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh
 ```
+
 #### Normal log output indicates a successful start.
 
 ## Part 4: Add Global Shortcut Launch Commands
+
 #### To launch NapCat and KiraAI with a single command from the Termux native environment, add the following aliases:
 
 ```bash
@@ -223,10 +241,13 @@ For remote access, replace `localhost` with your server's IP address.
 
 ## Troubleshooting
 
-- Check Python version: `python --version`
+- Check that your Python version meets the requirements: `python --version`
 - Ensure the virtual environment is activated: `source venv/bin/activate`
+- If KiraAI fails to start after an update with `bash: ./run.sh: Permission denied`, reactivate the virtual environment and grant execution permission: `cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh`
+- Synchronize the time with a network time server in the native Termux environment: `pkg install ntpdate && ntpdate pool.ntp.org`. Verify the corrected time with `date`; output should look like `Thu Nov  5 14:42:42 CST 2026`.
 - Check the project logs to locate errors
 
 ## FAQ
+
 - If you see the error: `fatal: unable to access... Recv_failure: Software caused connection abort`
   it means the network connection failed — use a VPN/proxy.
