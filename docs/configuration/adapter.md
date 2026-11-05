@@ -1,3 +1,0 @@
-# Adapter Configuration
-
-> Documentation under construction...

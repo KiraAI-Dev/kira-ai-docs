@@ -18,7 +18,7 @@ hero:
       link: /zh/deployment/windows
     - theme: alt
       text: 插件开发
-      link: /zh/development/plugins
+      link: /zh/development/plugins/dev-guide
 
 features:
   - icon: 🚀

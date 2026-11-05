@@ -119,5 +119,5 @@ yarn serve
 
 ## 联系我们
 
-- GitHub: [xxynet/KiraAI](https://github.com/xxynet/KiraAI)
-- 官方文档：[KiraAI 文档](https://docs.kiraai.com)
+- GitHub: [KiraAI-Dev/KiraAI](https://github.com/KiraAI-Dev/KiraAI)
+- 官方文档：[KiraAI 文档](https://docs.kira-ai.top)

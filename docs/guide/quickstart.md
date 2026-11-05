@@ -19,4 +19,4 @@ After deploying KiraAI according to the deployment tutorials above, you can conf
 
 ## Next Steps
 
-- Learn [Plugin Development](/development/guide) to extend KiraAI functionality
+- Learn [Plugin Development](/development/plugins/dev-guide) to extend KiraAI functionality

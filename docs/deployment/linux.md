@@ -23,7 +23,7 @@ sudo yum install python3 python3-pip python3-venv git -y
 ### 2. Download KiraAI
 
 ```bash
-git clone https://github.com/xxynet/KiraAI.git
+git clone https://github.com/KiraAI-Dev/KiraAI.git
 cd KiraAI
 ```
 

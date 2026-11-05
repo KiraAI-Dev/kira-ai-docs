@@ -38,13 +38,13 @@ git --version
 #### 方式一：使用Git克隆（推荐）
 
 ```powershell
-git clone https://github.com/xxynet/KiraAI.git
+git clone https://github.com/KiraAI-Dev/KiraAI.git
 cd KiraAI
 ```
 
 #### 方式二：直接下载ZIP文件
 
-1. 访问[KiraAI GitHub仓库](https://github.com/xxynet/KiraAI)
+1. 访问[KiraAI GitHub仓库](https://github.com/KiraAI-Dev/KiraAI)
 2. 点击"Code"按钮，选择"Download ZIP"
 3. 解压ZIP文件到您选择的目录
 4. 打开命令提示符或PowerShell，进入解压后的目录

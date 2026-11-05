@@ -7,6 +7,40 @@
 
   /* 更亮一点（背景 / 渐变） */
   --vp-c-brand-3: #6bd6a3;
+
+  /* 品牌色浅色背景 */
+  --vp-c-brand-soft: rgba(62, 175, 124, 0.14);
+}
+
+.dark {
+  --vp-c-brand-soft: rgba(107, 214, 163, 0.16);
+}
+
+.vp-doc .page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 32px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.vp-doc .page-meta span + span::before {
+  content: '·';
+  margin-right: 16px;
+  color: var(--vp-c-text-3);
+}
+
+@media (max-width: 480px) {
+  .vp-doc .page-meta {
+    display: grid;
+    gap: 2px;
+  }
+
+  .vp-doc .page-meta span + span::before {
+    content: none;
+  }
 }
 
 .vp-doc .custom-block {

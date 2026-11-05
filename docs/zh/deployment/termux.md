@@ -1,11 +1,17 @@
 # Termux部署
 
+:::tip 社区贡献
+本部署方式由社区贡献
+:::
+
 本指南将帮助您在Termux上部署KiraAI。
 
 ## 一.前置准备
+
 ### 1. 安装 Termux 
 https://github.com/termux/termux-app
 下载安装v0.118.3 或更高版本。
+
 ### 2. 基础环境配置 打开 Termux，执行以下命令进行初始设置。
 
    ```bash
@@ -22,6 +28,7 @@ https://github.com/termux/termux-app
    proot-distro login debian
    
    ```
+
 ### 3. 更换 Debian 软件源（有手动选择操作）
 
    ```bash
@@ -33,7 +40,9 @@ https://github.com/termux/termux-app
    apt install -y sudo curl libgcrypt20
    # 安装必要的sudo、curl、libgcrypt20系统工具包
    ```
+
 ### 4.开防杀后台：
+
 Acquire wakelock（获取唤醒锁）选无限制，
 后续显示wake lock held（保持唤醒锁定状态）
 
@@ -42,6 +51,7 @@ Acquire wakelock（获取唤醒锁）选无限制，
    ```bash
    exit
    ```
+
 ### 6.在原生环境中添加快捷命令“deb”用于快捷启动 Debian 环境
 
    ```bash
@@ -63,11 +73,13 @@ Acquire wakelock（获取唤醒锁）选无限制，
 ```bash
 deb
 ```
+
 ### 2. 下载安装NapCat
 
 ```bash
 curl -O https://raw.githubusercontent.com/NapNeko/NapCat-Installer/refs/heads/main/script/install.sh
 ```
+
 ### 3. 给予权限并运行
 
 ```bash
@@ -88,13 +100,14 @@ source ~/.bashrc
 ```bash
 xvfb-run -a /root/Napcat/opt/QQ/qq --no-sandbox
 ```
-#### 看到正常输出日志即表示启动成功
-#### 详细登录配置流程请参考 NapCat 官方文档
+看到正常输出日志即表示启动成功，详细登录配置流程请参考 NapCat 官方文档
 
 
 ## 三.安装 KiraAI 
+
 ### 1.确保在proot环境中，显示为“root@localhost:~#”
-### 2.安装github
+
+### 2.安装 git
 
 ```bash
 apt update && apt install -y git
@@ -103,20 +116,22 @@ git --version
 # 2.验证是否成功(显示 git version x.x.x 这样的信息， 就说明安装成功了）
 ```
 
-### 3.选个位置放Kiraai
+### 3.选个位置放 KiraAI
 
 ```bash
 cd /root
 ```
 ### 4.克隆 KiraAI 仓库
+
 ```bash
-git clone https://github.com/xxynet/KiraAI.git
+git clone https://github.com/KiraAI-Dev/KiraAI.git
 ```
 如果显示报错信息fatal:unable to access... Recv_failure: Software caused connection abort
 就表示网络连接失败开梯子去吧
 
 ### 5.返回Kiraai文件
-### 6安装Python编译依赖
+
+### 6.安装Python编译依赖
 ```bash
 apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils \
@@ -128,6 +143,7 @@ tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```bash
 wget https://mirrors.aliyun.com/python-release/source/Python-3.11.11.tgz
 ```
+
 ### 8.下载完成后，确认文件是否存在
 
 ```bash
@@ -194,8 +210,8 @@ echo "alias NC='proot-distro login debian -- bash -c \"xvfb-run -a /root/Napcat/
 echo "echo '输入 NC 启动 NapCat (自动进入Debian并运行NapCat)'" >> ~/.bashrc
 
 # 2. 一键启动 KiraAI 的命令
-echo "alias Kiraai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
-echo "echo ' 输入 Kiraai 一键启动 KiraAI (自动进入 Debian 并激活 venv 环境'" >> ~/.bashrc
+echo "alias kira-ai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
+echo "echo ' 输入 kira-ai 一键启动 KiraAI (自动进入 Debian 并激活 venv 环境'" >> ~/.bashrc
 
 # 3. 重新加载配置
 source ~/.bashrc
@@ -204,7 +220,7 @@ source ~/.bashrc
 ### 日常使用
 
 1. 启动 NapCat：在 Termux 中输入 NC 并按回车。
-2. 启动 KiraAI：新建一个 Termux 会话，输入 Kiraai 并按回车。
+2. 启动 KiraAI：新建一个 Termux 会话，输入 kira-ai 并按回车。
 
 ## 访问KiraAI
 

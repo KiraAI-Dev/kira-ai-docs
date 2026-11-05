@@ -6,7 +6,7 @@ This chapter will guide you through developing a KiraAI provider.
 
 ## File Structure
 
-All providers are located in the `core/provider/src` directory.
+Built-in providers are located in the `core/provider/src` directory. A plugin can instead keep a Provider inside its own directory and explicitly register it through `await self.ctx.register_provider("relative/path")`; see [PluginContext API](./plugins/context#register-plugin-owned-providers-and-adapters) for the component layout and lifecycle.
 
 The file structure of a KiraAI provider is as follows:
 ```
@@ -29,9 +29,20 @@ The provider manifest file (`manifest.json`) is a configuration file used by Kir
     "version": "1.0.0",
     "author": "Author",
     "description": "Provider description",
-    "repo": "Provider repository URL or null"
+    "repo": "Provider repository URL or null",
+    "icon": "icon.svg",
+    "icon-dark": "icon-dark.svg"
 }
 ```
+
+### Manifest Icons
+
+`icon` and `icon-dark` are optional image paths, relative to the provider directory that contains `manifest.json`. They are shown in the WebUI provider type selector and provider cards.
+
+- `icon`: icon used in light mode.
+- `icon-dark`: icon used in dark mode. When omitted, the `icon` value is used in both themes.
+
+For security, an icon path must remain inside the provider directory: absolute paths and paths that resolve outside that directory are ignored. Supported formats are SVG, PNG, JPEG, GIF, WebP, AVIF, and ICO. Use a square SVG or image with enough contrast for its target theme.
 
 ## Provider Configuration Parameters Schema File
 
@@ -103,6 +114,46 @@ The provider class needs to inherit from the `BaseProvider` class, which defines
 The specific model clients are defined in the class attribute `models` of the provider class, with the key being the model type and the value being the model client class.
 
 The provider class is automatically loaded when KiraAI starts. KiraAI will load the corresponding model client classes based on the configuration in the provider manifest file and model type, and provide a visual configuration interface in the WebUI.
+
+## v3 model identity and provider status
+
+`ModelInfo.model_id` is a stable internal identity. `ModelInfo.model_name` is the name sent to the upstream API. Custom clients must use `self.model.model_name` when building requests, rather than sending the internal ID as the upstream `model` parameter.
+
+Configuration uses `model_config_version = 2`:
+
+```json
+{
+  "model_config_version": 2,
+  "model_config": {
+    "llm": {
+      "<internal_id>": {
+        "model_name": "upstream-model-name",
+        "config": {"temperature": 0.7}
+      }
+    }
+  }
+}
+```
+
+Model selection references remain `provider_id:model_id`, but the part after the colon is the internal ID. Editing the upstream name preserves that identity. Names must be nonempty and unique within a provider and model type.
+
+| Manager API | Current meaning |
+| --- | --- |
+| `register_model(provider_id, model_type, model_name, config=None)` | Returns the generated internal ID, or `None` if the provider is missing |
+| `get_models(provider_id)` | Returns `{model_name, config}` entries grouped by type and internal ID |
+| `get_model_info(..., model_type=None)` / `get_model_client(..., model_type=None)` | Accept internal IDs or unambiguous legacy aliases, with an optional model type |
+| `update_model(..., config=None, model_name=None)` | Renames without changing internal ID; supplied configuration replaces model parameters |
+| `sync_models(..., add_ids, delete_ids, config=None)` | Both lists still contain upstream names, despite the `ids` field names |
+
+Provider `status` is `active` or `inactive`; missing status in old configuration means `active`. Disabling preserves configuration and removes the runtime instance. Manager-obtained clients also check availability before each new asynchronous call, including cached clients. Disabled providers raise `ProviderAPIError`; disabling does not undo requests already sent upstream.
+
+### Compatibility and migration boundaries
+
+Migration creates a `.model-identity-v1.bak` backup before converting old entries and model references. Old names are retained as `legacy_ids` and resolve only when unambiguous. Do not assume new models have old-name aliases. Model-creation REST requests still accept the old `model_id` field as an input alias for `model_name`.
+
+Direct `ModelInfo` construction without `model_name` temporarily falls back to `model_id` as the upstream name for older integrations. New Providers must use the new field explicitly, rather than depending on that fallback to identify every model's upstream name.
+
+OpenAI-compatible client implementations now live in `core.provider.openai_compatible`; migrate away from their old implementation path under `core.utils`.
 
 ## Model Clients
 

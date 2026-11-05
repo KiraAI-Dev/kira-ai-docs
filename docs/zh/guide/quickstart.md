@@ -19,4 +19,4 @@ KiraAI 支持多种部署方式，包括但不限于：
 
 ## 下一步
 
-- 学习 [插件开发](/zh/development/development) 扩展KiraAI功能
+- 学习 [插件开发](/zh/development/plugins/dev-guide) 扩展KiraAI功能
