@@ -169,15 +169,19 @@ ls -l /usr/local/bin/python3.11
 cd /root/KiraAI
 
 # 2.创建并配置 Python 虚拟环境
-python3.11 -m venv .venv
+python3.11 -m venv venv
 
 # 3.激活虚拟环境
-source .venv/bin/activate
+source venv/bin/activate
 
 # 4.安装项目依赖
 pip install -r requirements.txt
+python main.py
 
-# 5.运行 KiraAI
+# 5.赋予运行权限
+cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh
+
+# 6.运行 KiraAI
 cd scripts
 ./run.sh
 ```
@@ -194,8 +198,8 @@ echo "alias NC='proot-distro login debian -- bash -c \"xvfb-run -a /root/Napcat/
 echo "echo '输入 NC 启动 NapCat (自动进入Debian并运行NapCat)'" >> ~/.bashrc
 
 # 2. 一键启动 KiraAI 的命令
-echo "alias Kiraai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source .venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
-echo "echo ' 输入 Kiraai 一键启动 KiraAI (自动进入 Debian 并激活 .venv 环境'" >> ~/.bashrc
+echo "alias Kiraai='proot-distro login debian -- bash -c \"cd /root/KiraAI && source venv/bin/activate && cd scripts && ./run.sh\"'" >> ~/.bashrc
+echo "echo ' 输入 Kiraai 一键启动 KiraAI (自动进入 Debian 并激活 venv 环境'" >> ~/.bashrc
 
 # 3. 重新加载配置
 source ~/.bashrc
@@ -221,6 +225,8 @@ http://localhost:5267
 
 - 检查Python版本是否符合要求：`python --version`
 - 确保虚拟环境已正确激活：`venv\Scripts\activate`
+- 偶尔更新时启动KiraAI遇到缺少运行权限提示 `bash: ./run.sh: Permission denied` 重新进入虚拟环境赋予运行权限：`cd /root/KiraAI/scripts && chmod +x run.sh && ./run.sh`
+- 从网络时间服务器同步时间：`pkg install ntpdate && ntpdate pool.ntp.org` 验证时间校正是否成功：`date` 输出格式类似：`Thu Nov  5 14:42:42 CST 2026`
 - 查看项目日志以定位错误
   
 ## 常见问题
