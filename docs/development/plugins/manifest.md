@@ -5,7 +5,7 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
 ```json
 {
   "display_name": "My Plugin",
-  "plugin_id": "my_plugin",
+  "plugin_id": "kira-ai-plugin-demo",
   "version": "1.0",
   "core_version": ">=3.0.0",
   "author": "Your Name",
@@ -25,7 +25,7 @@ Describes the plugin's basic information. **Must be present**; otherwise the fol
 
 | Field          | Description                                                  | Required    |
 | -------------- | ------------------------------------------------------------ | ----------- |
-| `plugin_id`    | Unique plugin ID; determines config filename and data directory | Recommended |
+| `plugin_id`    | Unique plugin ID; **the `kira-ai-plugin-` prefix is recommended** (e.g. `kira-ai-plugin-demo`); determines config filename and data directory | Recommended |
 | `display_name` | Plugin name displayed in WebUI                               | No          |
 | `version`      | Version number                                               | No          |
 | `core_version` | Required KiraAI version specifier, following [PEP 508](https://peps.python.org/pep-0508/) version specifier syntax (e.g. `>=1.0.0`, `>=1.0,<2.0`, `~=1.2`). If the requirement is not met, the plugin will not be loaded and an error message will be displayed in WebUI | No          |

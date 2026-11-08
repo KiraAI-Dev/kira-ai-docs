@@ -5,7 +5,7 @@
 ```json
 {
   "display_name": "我的插件",
-  "plugin_id": "my_plugin",
+  "plugin_id": "kira-ai-plugin-demo",
   "version": "1.0",
   "core_version": ">=3.0.0",
   "author": "Your Name",
@@ -25,7 +25,7 @@
 
 | 字段           | 说明                                      | 必填 |
 | -------------- | ----------------------------------------- | ---- |
-| `plugin_id`    | 插件唯一 ID，影响配置文件名和数据目录名   | 推荐 |
+| `plugin_id`    | 插件唯一 ID，**建议以 `kira-ai-plugin-` 开头**（如 `kira-ai-plugin-demo`），影响配置文件名和数据目录名   | 推荐 |
 | `display_name` | WebUI 中显示的插件名称                    | 否   |
 | `version`      | 版本号                                    | 否   |
 | `core_version` | 所需的 KiraAI 版本要求，遵循 [PEP 508](https://peps.python.org/pep-0508/) 版本说明符语法（如 `>=1.0.0`、`>=1.0,<2.0`、`~=1.2`）。不满足时插件不会被加载，WebUI 将显示错误信息 | 否   |
