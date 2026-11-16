@@ -36,8 +36,8 @@ Use the **Logs** page to confirm that the provider and adapter connect successfu
 | **WebChat** | Talk directly with your AI digital life using text, images, and files. |
 | **Stickers** | Manage the local sticker library. |
 | **Configuration** | Set system-wide options, including model defaults and network-related settings. |
-| **Add-ons** | Manage installed plugins, the plugin store, MCP servers, Skills, and their session scope. |
-| **Sessions** | Inspect message history and LLM context, and manage session details and capability overrides. |
+| **Add-ons** | Manage plugins, the plugin store, MCP servers, Skills, subagent presets, and session scopes. |
+| **Sessions** | Inspect message history and LLM context, and manage session details, reply models, and capability overrides. |
 | **Logs** | Review runtime output and diagnose connection or configuration errors. |
 | **Settings** | Manage WebUI settings and instance data operations exposed by the application. |
 
@@ -73,6 +73,18 @@ Keep general behavior rules in the persona. The default chat plugin's group-chat
 - Treat plugin packages, Skills archives, MCP server definitions, and provider endpoints as trusted-code or trusted-service inputs. Review their source and permissions before adding them.
 - If a change does not take effect, refresh the relevant list, review **Logs**, and verify that the corresponding item is enabled.
 - Back up the `data/` directory before upgrades or large configuration changes.
+
+## WebUI 503
+
+At startup, KiraAI checks for the frontend build in `data/dist/`. If it is missing or its version does not match, KiraAI tries to download `dist.zip` from the matching GitHub Release. If no usable build is available, opening the WebUI returns HTTP 503. Check the startup log for download or extraction errors. For a source checkout, you can build the frontend locally using Node.js 20+ and start KiraAI with that build. Run the following from the repository root.
+
+```bash
+cd webui/frontend
+npm ci
+npm run build
+cd ../..
+python main.py --webui-dir webui/static/dist --ignore-webui-version-check
+```
 
 ## Troubleshooting
 

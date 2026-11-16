@@ -81,6 +81,7 @@ my_provider/
   - `video`：视频生成模型
   - `embedding`：嵌入模型
   - `rerank`：重排序模型
+  - `decision`：决策模型
 - `config_key`：配置项键，用于标识配置项。
 - `name`：配置项显示名称，用于在 WebUI 上显示。
 - `type`：配置项类型，如 `string`、`integer`、`float` 等。
@@ -160,6 +161,8 @@ OpenAI 兼容客户端的实现位置为 `core.provider.openai_compatible`；不
 :::warning
 部分模型客户端基类可能会随着版本更新而改变，但大部分情况下会兼容旧版本。
 :::
+
+如需自定义模型的健康检查，可在客户端实现 `async def health_check(self) -> None`，并在探测失败时抛出异常。决策模型接口见 `core/provider/provider.py` 中的 `DecisionModelClient`。
 
 ### LLM 客户端
 

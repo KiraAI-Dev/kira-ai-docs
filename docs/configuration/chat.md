@@ -43,6 +43,8 @@ Enable only the capabilities for which you have configured suitable models under
 
 **Agent Settings** limit tool execution for a single reply: by default, at most 5 Agent loops, 5 tool calls per turn, and 60 seconds for each tool call. Increasing the limits can let complex tasks complete more steps, but increases response time and model/tool-call cost. A tool-call timeout of `0` means no timeout; use it only with trusted, controlled tools.
 
+The **Tool Output Limit (Estimated Tokens)** defaults to 10,000 per call. KiraAI estimates text tokens as UTF-8 bytes divided by four. When text exceeds the limit, it keeps the beginning and end and marks the truncation. Images do not count toward this limit. Set it to `0` for unlimited text output.
+
 **Image Compression** is off by default. When enabled, large or high-resolution incoming images are compressed before being sent to a VLM or a native multimodal model. The defaults are a 1280-pixel longest edge, JPEG quality 95, and a 1 MB file threshold. Enable it when bandwidth or model-input cost is constrained; leave it disabled or raise the edge and quality when small text or fine details matter.
 
 ## Chat plugin settings
@@ -65,5 +67,7 @@ Save the chat-plugin configuration after editing it. Restart KiraAI before testi
 ## Per-session overrides and verification
 
 In **Sessions**, edit a conversation and choose **Custom Capabilities** to enable or disable image recognition, STT, TTS, image/video generation, and forwarded-message parsing just for that session. Choose **Global** to inherit this page's defaults.
+
+In the same session editor, select a **Chat Reply Model** to use a specific LLM for replies in that session. Choose **Use the global default LLM** to clear the override. If the selected model becomes unavailable, choose an available model or return to the global default to resume replies.
 
 Selecting **Save** writes the settings to the runtime configuration. Send a new test message to verify the result. For settings such as message merging and send delay that components read when they start, restart KiraAI before testing to ensure the change is active. For additional chat options supplied by message plugins, open the configuration of enabled plugins under **Add-ons → Plugins**.

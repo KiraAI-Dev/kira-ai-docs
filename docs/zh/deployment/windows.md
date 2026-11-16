@@ -88,6 +88,8 @@ http://localhost:5267
 
 ## 故障排查
 
+如果访问 WebUI 返回 HTTP 503，请参阅 [WebUI 503](/zh/usage/webui#webui-503) 排查前端产物。
+
 - 检查Python版本是否符合要求：`python --version`
 - 确保虚拟环境已正确激活：`venv\Scripts\activate`
 - 查看项目日志以定位错误

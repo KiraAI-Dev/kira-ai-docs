@@ -24,10 +24,15 @@ This project is in active development; the decorator system may change.
 | `@on.llm_request()`      | Before sending a request to the LLM (inject prompt) | `(self, event: KiraMessageBatchEvent, req: LLMRequest, tag_set: TagSet, *args, **kwargs)` |
 | `@on.llm_response()`     | After raw LLM response is received                   | `(self, event: KiraMessageBatchEvent, resp: LLMResponse, *args, **kwargs)` |
 | `@on.after_xml_parse()`  | After XML parsing (actions list available)           | `(self, event: KiraMessageBatchEvent, actions: list, *args, **kwargs)` |
+| `@on.tool_call()` | Before running a resolved tool call | `(self, ctx: ToolCallContext)` |
 | `@on.tool_result()`      | After a tool call returns its result                 | `(self, event: KiraMessageBatchEvent, result: ToolResult, *args, **kwargs)` |
 | `@on.message_sent()`     | After a single message is sent to the IM platform    | `(self, event: KiraMessageBatchEvent, action: MessageChain, result: KiraIMSentResult, *args, **kwargs)` |
 | `@on.step_result()`      | After each agent step completes                      | `(self, event: KiraMessageBatchEvent, step_result: KiraStepResult, *args, **kwargs)` |
 | `@on.final_result()`     | After the Agent turn, before context persistence; `result.step_results` contains all step results          | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)` |
+
+### Before a tool call
+
+`@on.tool_call()` receives a `ToolCallContext` from `core.agent.hook_context`. Use `ctx.tool` and `ctx.tool_call_id` to identify the call, and edit `ctx.arguments` to change the input. `ctx.event` is the original event when available. Call `ctx.set_result(...)` with a string or `ToolResult` to skip tool execution. The supplied result still goes through the result hooks and normal output handling.
 
 ### Comment events
 
@@ -109,7 +114,7 @@ IM Message Arrives
   @on.llm_response()      ← read raw LLM output, auto-fix XML
         │
         ▼
-  [Tool Execution] ◄──────────► @on.tool_result()  ← per tool call
+  [Tool Execution] ◄──────────► @on.tool_call() → run tool → @on.tool_result()
         │
         ▼
   [XML Parsing]

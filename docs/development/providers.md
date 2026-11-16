@@ -81,6 +81,7 @@ The following are explanations of the related fields:
   - `video`: Video generation model
   - `embedding`: Embedding model
   - `rerank`: Reranking model
+  - `decision`: Decision model
 - `config_key`: Configuration item key, used to identify the configuration item.
 - `name`: Configuration item display name, used to display on WebUI.
 - `type`: Configuration item type, such as `string`, `integer`, `float`, etc.
@@ -160,6 +161,8 @@ OpenAI-compatible client implementations now live in `core.provider.openai_compa
 :::warning
 Some model client base classes may change with version updates, but in most cases, they will be compatible with older versions.
 :::
+
+To provide a model-specific health check, implement `async def health_check(self) -> None` on the client and raise an error if the probe fails. See `DecisionModelClient` in `core/provider/provider.py` for the decision model interface.
 
 ### LLM Client
 
