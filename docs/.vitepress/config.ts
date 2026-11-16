@@ -77,6 +77,7 @@ export default defineConfig({
               { text: 'Deploy on Linux', link: '/deployment/linux' },
               { text: 'Deploy with Docker', link: '/deployment/docker' },
               { text: 'Deploy on Termux', link: '/deployment/termux' },
+              { text: 'Deploy on Android', link: '/deployment/android' },
               { text: 'Deploy with Launcher', link: '/deployment/launcher' },
             ]
           },
@@ -198,6 +199,7 @@ export default defineConfig({
               { text: 'Linux 部署', link: '/zh/deployment/linux' },
               { text: 'Docker 部署', link: '/zh/deployment/docker' },
               { text: 'Termux 部署', link: '/zh/deployment/termux' },
+              { text: 'Android 部署', link: '/zh/deployment/android' },
               { text: '启动器部署', link: '/zh/deployment/launcher' },
             ]
           },

@@ -17,10 +17,6 @@
 
 > **注**：此为社区插件的官方指定地址。
 
-### KiraAI 手机版
-
-[KiraAI 手机版仓库](https://github.com/fcll32/KiraAI-Android)
-
 ### 提供商
 
 - [Dashscope Qwen TTS](https://github.com/canyingshc/KiraAI-Qwen3-TTS-VC) - 一个为 KiraAI 编写的 Dashscope Qwen TTS 声音复刻语音合成 Provider。

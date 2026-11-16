@@ -17,10 +17,6 @@ Welcome to the KiraAI community! We're glad you're here and look forward to your
 
 > **Note**: This is the designated official address for community-developed plugins.
 
-### KiraAI for Android
-
-[KiraAI for Android repository](https://github.com/fcll32/KiraAI-Android)
-
 ### Providers
 
 - [Dashscope Qwen TTS](https://github.com/canyingshc/KiraAI-Qwen3-TTS-VC) - A Dashscope Qwen TTS provider for KiraAI
