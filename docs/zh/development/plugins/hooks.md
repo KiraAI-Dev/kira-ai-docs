@@ -24,10 +24,15 @@ from core.plugin import on, Priority
 | `@on.llm_request()`      | 向 LLM 发送请求前（注入 Prompt）   | `(self, event: KiraMessageBatchEvent, req: LLMRequest, tag_set: TagSet, *args, **kwargs)` |
 | `@on.llm_response()`     | LLM 原始响应返回后                 | `(self, event: KiraMessageBatchEvent, resp: LLMResponse, *args, **kwargs)` |
 | `@on.after_xml_parse()`  | XML 解析完成后（得到 actions 列表）| `(self, event: KiraMessageBatchEvent, actions: list, *args, **kwargs)` |
+| `@on.tool_call()` | 已解析的工具调用执行前 | `(self, ctx: ToolCallContext)` |
 | `@on.tool_result()`      | 工具调用返回结果后                 | `(self, event: KiraMessageBatchEvent, result: ToolResult, *args, **kwargs)` |
 | `@on.message_sent()`     | 单条消息发送到 IM 平台后           | `(self, event: KiraMessageBatchEvent, action: MessageChain, result: KiraIMSentResult, *args, **kwargs)` |
 | `@on.step_result()`      | Agent 每步结束后                   | `(self, event: KiraMessageBatchEvent, step_result: KiraStepResult, *args, **kwargs)` |
 | `@on.final_result()`     | Agent 本轮执行结束后、上下文保存前；`result.step_results` 汇总本轮各步结果                 | `(self, event: KiraMessageBatchEvent, result: KiraFinalResult, *args, **kwargs)`                    |
+
+### 工具调用前
+
+`@on.tool_call()` 接收 `core.agent.hook_context` 中的 `ToolCallContext`。可通过 `ctx.tool` 和 `ctx.tool_call_id` 识别调用，或修改 `ctx.arguments` 调整工具参数。`ctx.event` 在存在原始事件时返回该事件。调用 `ctx.set_result(...)` 并传入字符串或 `ToolResult` 可跳过工具执行。提供的结果仍会经过结果 Hook 和正常的输出处理。
 
 ### 评论事件
 
@@ -109,7 +114,7 @@ IM 消息到达
   @on.llm_response()      ← 读取原始输出、自动修复 XML
      │
      ▼
-  [工具执行] ◄──────────► @on.tool_result()  ← 每次工具调用
+  [工具执行] ◄──────────► @on.tool_call() → 执行工具 → @on.tool_result()
      │
      ▼
   [XML 解析]

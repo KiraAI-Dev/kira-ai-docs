@@ -49,7 +49,8 @@ KiraAI ships with several builtin plugins:
 | `default-sticker` | Sticker support in conversations |
 | `search` | Web search tools for the LLM |
 | `agent` | File access, search, and command execution; replaces the old `file` plugin |
-| `kira_session_plugin` | Cross-session awareness and management |
+| `kira_session_plugin` | Session details, searchable message history, and cross-session messaging |
+| `subagents` | Delegate tasks to background agents and continue their sessions |
 
 ## Install and manage plugins
 
@@ -70,9 +71,17 @@ The **MCP** and **Skills** tabs are managed alongside plugins:
 
 - [MCP](/usage/features/mcp) connects external tool servers to KiraAI.
 - [Skills](/usage/features/skills) adds reusable task instructions for the agent.
-- The **Scope** tab controls whether each MCP server or Skill is global, allowed only for selected sessions, or denied for selected sessions.
+- The **Scope** tab controls whether each MCP server or Skill is global, allowed only for selected sessions, or denied for selected sessions. It also controls which sessions can use each subagent preset.
 
 Use a narrow scope for capabilities that access files, external services, or private information.
+
+## Subagents
+
+Open **Add-ons → Subagents** and create an enabled preset. Give it a name and purpose so the main agent can select it. You can also set a model, system prompt or persona, maximum steps, and which tools and Skills the preset can use. Tool and Skill access is checked against the parent session. Use **Scope → Subagent Presets** to limit where each preset is available. The parent session receives a notice when a delegated turn finishes.
+
+## Session tool permissions
+
+In **Add-ons → Plugins**, open the configuration for `kira_session_plugin`. You can enable or disable `session_view` and `get_message_history` independently. An enabled tool can read the current session. For cross-session reads, both the calling-session and target-session policies must allow the request, and the target must also pass its adapter's access rules. The default empty caller allowlist disables cross-session reading.
 
 ## Troubleshooting
 

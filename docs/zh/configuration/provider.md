@@ -22,12 +22,13 @@ API 密钥和自定义请求头会保存到 KiraAI 的运行时配置中。请�
 | --- | --- | --- |
 | OpenAI | LLM、TTS、图像生成、Embedding | Base URL、API 密钥、可选自定义请求头 |
 | Anthropic | LLM | Base URL、API 密钥、Anthropic API 版本、可选自定义请求头 |
-| DeepSeek | LLM | Base URL、API 密钥、可选自定义请求头 |
+| DeepSeek | LLM、TTS、STT | Base URL、API 密钥、可选自定义请求头 |
 | 阿里云百炼 | LLM、TTS、STT、图像生成、Embedding、Rerank | API 密钥、地域、可选业务空间 ID、可选 Base URL 覆盖、自定义请求头 |
 | 硅基流动 CN | LLM、TTS、STT、图像生成、Embedding、Rerank | Base URL、API 密钥 |
 | 火山引擎 | LLM、图像生成、视频生成、Embedding | Base URL、API 密钥 |
 | ModelScope（魔搭） | LLM、图像生成、Embedding | Base URL、API 密钥 |
 | GPT-SoVITS | TTS | API 地址、可选参考音频路径和文本 |
+| TypeSafe | 决策模型 | Base URL、API 密钥、可选自定义请求头 |
 
 模型类型表示 KiraAI 的接入能力，并不代表该提供商的每个模型都支持该能力。例如，只有在所选模型支持当前提供商的图像生成端点时，才应将它添加为图像生成模型。
 
@@ -44,6 +45,7 @@ API 密钥和自定义请求头会保存到 KiraAI 的运行时配置中。请�
 | Embedding | 超时和慢请求记录阈值；百炼还可设置向量维度 |
 | Rerank | 超时和提供商特有的结果选项 |
 | 视频生成 | 填写模型 ID；火山引擎当前没有额外模型字段 |
+| 决策模型 | 请求超时，TypeSafe 默认为 30 秒 |
 
 `extra_body` 必须是 JSON 对象，用于端点专有的请求字段（例如提供商定义的联网搜索开关）。仅在所选模型的文档明确支持该字段时使用。
 
@@ -61,7 +63,7 @@ API 密钥和自定义请求头会保存到 KiraAI 的运行时配置中。请�
 
 ## 测试与排查
 
-保存模型后可使用模型健康检查。它会发送一个小型测试请求，并为 **LLM**、**TTS**、**Embedding** 和 **Rerank** 模型报告延迟；当前不支持为 STT、图像生成或视频生成模型执行健康检查。
+保存模型后可使用模型健康检查。检查由模型客户端执行，成功时会显示延迟。KiraAI 为 **LLM**、**TTS**、**Embedding**、**Rerank**、**决策模型**和 **DeepSeek STT** 提供健康检查。其他内置 STT 客户端以及内置图像和视频生成客户端目前没有实现健康检查。
 
 如果提供商无法加载或请求失败：
 

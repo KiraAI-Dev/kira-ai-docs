@@ -22,12 +22,13 @@ API keys and custom headers are stored in KiraAI's runtime configuration. Do not
 | --- | --- | --- |
 | OpenAI | LLM, TTS, image generation, embedding | Base URL, API key, optional custom headers |
 | Anthropic | LLM | Base URL, API key, Anthropic API version, optional custom headers |
-| DeepSeek | LLM | Base URL, API key, optional custom headers |
+| DeepSeek | LLM, TTS, STT | Base URL, API key, optional custom headers |
 | Aliyun Bailian | LLM, TTS, STT, image generation, embedding, rerank | API key, region, optional workspace ID, optional Base URL override, optional custom headers |
 | SiliconFlow CN | LLM, TTS, STT, image generation, embedding, rerank | Base URL, API key |
 | Volcengine | LLM, image generation, video generation, embedding | Base URL, API key |
 | ModelScope | LLM, image generation, embedding | Base URL, API key |
 | GPT-SoVITS | TTS | API URL, optional reference-audio path and transcript |
+| TypeSafe | Decision | Base URL, API key, optional custom headers |
 
 Model types describe the integration capability, not a promise that every model from a provider supports it. For example, add an image-generation model only when that model supports the configured image-generation endpoint.
 
@@ -44,6 +45,7 @@ After creating a provider, select its capability group and choose **Add Model**.
 | Embedding | Timeout and slow-request logging threshold; Bailian can also set dimensions |
 | Rerank | Timeout and provider-specific result options |
 | Video generation | Add the model ID; Volcengine currently exposes no additional model fields |
+| Decision | Request timeout (30 seconds by default for TypeSafe) |
 
 `extra_body` must be a JSON object. It is for endpoint-specific request fields, such as a provider's search option, and should only be used when the selected model documents that field.
 
@@ -61,7 +63,7 @@ Disabling blocks new calls, including calls through previously cached plugin cli
 
 ## Test and troubleshoot
 
-Use the model health-check action after saving a model. It sends a small test request and reports latency for **LLM**, **TTS**, **embedding**, and **rerank** models. Health checks are not currently provided for STT, image-generation, or video-generation models.
+Use the model health-check action after saving a model. The check runs through the model client and reports latency on success. KiraAI provides checks for **LLM**, **TTS**, **embedding**, **rerank**, **decision** models, and **DeepSeek STT**. Other built-in STT clients and built-in image and video generation clients currently have no health check.
 
 If a provider cannot load or a request fails:
 

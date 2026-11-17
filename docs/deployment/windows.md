@@ -90,6 +90,8 @@ If accessing remotely, replace localhost with the server IP address.
 
 ## Troubleshooting
 
+If opening WebUI returns HTTP 503, see [WebUI 503](/usage/webui#webui-503) for frontend recovery steps.
+
 - Check if Python version meets requirements: `python --version`
 - Ensure the virtual environment is properly activated: `venv\Scripts\activate`
 - View project logs to locate errors
