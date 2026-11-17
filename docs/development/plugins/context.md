@@ -44,7 +44,7 @@ Disabling a provider prevents new calls through clients obtained from its manage
 
 ## Running and steering agents
 
-- `await self.ctx.run_agent(prompt, tools=...)` runs an independent agent in a fresh conversation and returns its final `LLMResponse`. It uses the default LLM when `model_group` is omitted. Pass tools as a `ToolSet` or a sequence of tool instances. Execution failures or a missing final reply raise `RuntimeError`.
+- `await self.ctx.run_agent(prompt, tools=...)` runs an independent agent in a fresh conversation and returns its final `LLMResponse`. When `model_group` is omitted, it uses the default LLM and raises `ValueError` if no default LLM is available. Pass tools as a `ToolSet` or a sequence of tool instances. Execution failures or a missing final reply raise `RuntimeError`.
 - `self.ctx.create_agent_executor(...)` returns a `PluginAgentExecutor` for workflows that need to configure their own request, hooks, or execution settings. Start execution separately.
 - `self.ctx.steer_main_agent(target, message)` queues an instruction for the next model request in the session's active IM turn. Call it from the workflow event loop. The target can be a `Session`, SID, or internal ID. `True` means the instruction was accepted. `False` means there was no unique active turn accepting instructions.
 

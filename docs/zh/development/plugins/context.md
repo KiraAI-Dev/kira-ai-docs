@@ -44,7 +44,7 @@ llm = self.ctx.get_llm_client(model_uuid=f"{provider_id}:{model_id}")
 
 ## 运行独立代理与补充主代理指令
 
-- `await self.ctx.run_agent(prompt, tools=...)` 在新会话中运行独立代理，并返回最终的 `LLMResponse`。省略 `model_group` 时使用全局默认 LLM。工具可传入 `ToolSet` 或工具实例序列。执行失败或缺少最终回复时会抛出 `RuntimeError`。
+- `await self.ctx.run_agent(prompt, tools=...)` 在新会话中运行独立代理，并返回最终的 `LLMResponse`。省略 `model_group` 时使用全局默认 LLM。若没有可用的默认 LLM，则抛出 `ValueError`。工具可传入 `ToolSet` 或工具实例序列。执行失败或缺少最终回复时会抛出 `RuntimeError`。
 - `self.ctx.create_agent_executor(...)` 返回 `PluginAgentExecutor`，适用于需要自定义请求、Hook 或执行设置的工作流。创建执行器后需另行启动执行。
 - `self.ctx.steer_main_agent(target, message)` 将补充指令排入该会话当前 IM 轮次的下一次模型请求。请在工作流事件循环中调用，目标可为 `Session`、SID 或内部 ID。返回 `True` 表示指令已入队，返回 `False` 表示没有唯一且仍接受指令的活动轮次。
 
